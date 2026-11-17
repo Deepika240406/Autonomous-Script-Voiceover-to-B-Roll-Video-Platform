@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+.pytest_cache/
+storage_root/
+batch_results/*/*.mp4
+temp_test/
+.coverage
+htmlcov/
+*.log
