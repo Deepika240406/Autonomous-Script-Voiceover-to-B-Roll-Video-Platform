@@ -16,10 +16,11 @@ class PexelsFootageProvider(BaseFootageProvider):
         return "pexels"
 
     async def search(self, query: str, min_duration: float = 3.0, count: int = 5) -> List[CandidateClip]:
-        if not self.api_key:
+        key = self.api_key or settings.PEXELS_API_KEY
+        if not key:
             return []
 
-        headers = {"Authorization": self.api_key}
+        headers = {"Authorization": key}
         params = {
             "query": query,
             "per_page": count * 2,

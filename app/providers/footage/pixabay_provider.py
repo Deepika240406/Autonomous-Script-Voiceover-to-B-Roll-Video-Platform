@@ -9,25 +9,29 @@ from app.core.logging import logger
 class PixabayFootageProvider(BaseFootageProvider):
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or settings.PIXABAY_API_KEY
-        self.base_url = "https://pixabay.com/api/videos"
+        self.base_url = "https://pixabay.com/api/videos/"
 
     @property
     def provider_name(self) -> str:
         return "pixabay"
 
     async def search(self, query: str, min_duration: float = 3.0, count: int = 5) -> List[CandidateClip]:
-        if not self.api_key:
+        key = self.api_key or settings.PIXABAY_API_KEY
+        if not key:
             return []
 
+        # Pixabay search prefers 1-4 keywords
+        clean_q = " ".join([w for w in query.split() if len(w) > 2][:4])
+
         params = {
-            "key": self.api_key,
-            "q": query,
+            "key": key,
+            "q": clean_q or query,
             "per_page": count * 2,
             "video_type": "film",
         }
 
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
                 resp = await client.get(self.base_url, params=params)
                 if resp.status_code != 200:
                     logger.warning(f"Pixabay API error HTTP {resp.status_code}: {resp.text}")
