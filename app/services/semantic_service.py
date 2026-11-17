@@ -162,9 +162,31 @@ class SemanticService:
         if visual_hint:
             search_candidates.insert(0, visual_hint.strip())
 
-        # Clean fallback query from narration
-        clean_text_query = re.sub(r"[^\w\s]", "", text)
-        clean_words = [w for w in clean_text_query.split() if len(w) > 3][:6]
+        # 7. Extract focused visual keywords and semantic phrases from narration
+        stopwords = {
+            "today", "used", "helps", "continues", "becoming", "important", "part",
+            "everyday", "lives", "large", "amounts", "better", "make", "this", "that",
+            "with", "from", "into", "their", "have", "some", "more", "also", "most",
+            "than", "been", "there", "which", "about", "would", "these", "other",
+            "could", "first", "after", "where", "being", "under", "never", "always",
+            "people", "grow", "like", "will", "much", "many", "such", "well"
+        }
+        clean_text_query = re.sub(r"[^\w\s]", " ", text)
+        substantive_words = [
+            w for w in clean_text_query.split()
+            if len(w) > 2 and w.lower() not in stopwords
+        ]
+
+        if len(substantive_words) >= 2:
+            # Pair of key domain words (e.g., 'healthcare business' or 'automate tasks')
+            search_candidates.append(f"{substantive_words[0]} {substantive_words[1]}")
+            if len(substantive_words) >= 4:
+                search_candidates.append(f"{substantive_words[2]} {substantive_words[3]}")
+        elif substantive_words:
+            search_candidates.append(substantive_words[0])
+
+        # Broad fallback
+        clean_words = [w for w in clean_text_query.split() if len(w) > 3][:4]
         if clean_words:
             search_candidates.append(" ".join(clean_words))
 
@@ -192,18 +214,21 @@ class SemanticService:
     def violates_avoid_rules(self, metadata_text: str, avoid_list: List[str]) -> Tuple[bool, Optional[str]]:
         """
         Checks whether candidate footage metadata violates the user avoid list.
+        Uses precise word-boundary matching so words like 'interface' are not falsely flagged.
         """
         lower = metadata_text.lower()
         for avoid_term in avoid_list:
             clean = avoid_term.strip().lower()
             if not clean:
                 continue
-            # e.g. "people's faces" -> check "face", "faces", "portrait", "close-up face"
+            # e.g. "people's faces" -> check distinct word boundaries for face, faces, portrait, selfie
             if clean in ("people's faces", "faces", "face"):
-                if any(w in lower for w in ["face", "faces", "close-up face", "portrait face"]):
+                if re.search(r"\b(face|faces|portrait|selfie|close up face)\b", lower):
                     return True, avoid_term
-            elif clean in lower:
-                return True, avoid_term
+            else:
+                escaped = re.escape(clean)
+                if re.search(rf"\b{escaped}\b", lower):
+                    return True, avoid_term
         return False, None
 
 

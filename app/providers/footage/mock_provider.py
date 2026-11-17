@@ -226,12 +226,12 @@ class MockFootageProvider(BaseFootageProvider):
             item = next((x for x in SAMPLE_FOOTAGE_LIBRARY if x["clip_id"] == clip.clip_id), SAMPLE_FOOTAGE_LIBRARY[0])
             color_src = item.get("color_spec", "color=c=0x112240:s=1920x1080:d=10")
 
-            # Render genuine 1080p MP4 clip with ffmpeg
+            # Render genuine 1080p MP4 clip with cinematic aesthetic tone
             cmd = [
                 "ffmpeg", "-y",
                 "-f", "lavfi",
                 "-i", color_src,
-                "-vf", f"drawtext=text='{clip.clip_id.upper()}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2",
+                "-vf", "vignette=PI/4,noise=c1s=8:c0f=u,format=yuv420p",
                 "-c:v", "libx264",
                 "-pix_fmt", "yuv420p",
                 "-r", "30",
