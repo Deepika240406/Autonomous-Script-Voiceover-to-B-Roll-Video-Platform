@@ -147,7 +147,10 @@ def get_web_dashboard():
 
           <!-- Audio URL Input -->
           <div id="section-audio" class="hidden">
-            <label class="block text-xs font-medium text-slate-300 mb-1.5">Audio URL</label>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-medium text-slate-300">Audio Voiceover URL</label>
+              <button type="button" onclick="loadDemoAudioUrl()" class="text-xs text-indigo-400 hover:text-indigo-300 transition underline">Try Sample URL</button>
+            </div>
             <input type="url" id="input-audio-url" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="https://example.com/voiceover.mp3" />
           </div>
 
@@ -237,6 +240,10 @@ def get_web_dashboard():
     let cachedTimeline = null;
     let cachedManifest = null;
 
+    function loadDemoAudioUrl() {
+      document.getElementById('input-audio-url').value = window.location.origin + '/api/v1/storage/samples/demo_voiceover.mp3';
+    }
+
     function setMode(mode) {
       currentMode = mode;
       ['script', 'scenes', 'audio'].forEach(m => {
@@ -245,6 +252,9 @@ def get_web_dashboard():
           ? 'px-3 py-2 rounded-lg bg-indigo-600 text-xs font-medium text-white transition'
           : 'px-3 py-2 rounded-lg bg-slate-800 text-xs font-medium text-slate-300 transition';
       });
+      if (mode === 'audio' && !document.getElementById('input-audio-url').value) {
+        loadDemoAudioUrl();
+      }
     }
 
     async function submitJob() {
@@ -284,7 +294,14 @@ def get_web_dashboard():
           return;
         }
       } else if (currentMode === 'audio') {
-        payload.audio_url = document.getElementById('input-audio-url').value;
+        const aUrl = document.getElementById('input-audio-url').value.trim();
+        if (!aUrl) {
+          alert('Please enter a valid Audio URL or click "Try Sample URL".');
+          btn.disabled = false;
+          btn.innerText = 'Generate B-Roll Video';
+          return;
+        }
+        payload.audio_url = aUrl;
       }
 
       try {

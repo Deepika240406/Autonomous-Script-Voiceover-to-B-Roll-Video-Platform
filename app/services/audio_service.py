@@ -40,16 +40,22 @@ class AudioService:
                 f"File size {size} bytes exceeds maximum allowed {settings.MAX_UPLOAD_SIZE_BYTES} bytes."
             )
 
-        # Validate extension
+        # Validate extension first if present
         check_name = filename or file_path
         _, ext = os.path.splitext(check_name.lower())
-        if ext not in ALLOWED_EXTENSIONS:
+        if ext and ext not in ALLOWED_EXTENSIONS:
             raise AudioValidationException(
                 f"Invalid file extension '{ext}'. Allowed extensions are: {sorted(list(ALLOWED_EXTENSIONS))}"
             )
 
         # Probe file via ffprobe
         info = inspect_audio(file_path)
+
+        # If extension was not present, verify genuine audio codec
+        if not ext:
+            valid_codecs = {"mp3", "aac", "wav", "pcm_s16le", "flac", "m4a", "vorbis", "opus"}
+            if info.get("codec_name") not in valid_codecs:
+                raise AudioValidationException("Downloaded file has no recognizable audio format.")
 
         # Analyze silence and volume levels
         vol_info = analyze_audio_silence_and_energy(file_path)
@@ -95,7 +101,7 @@ class AudioService:
         except httpx.RequestError as e:
             raise AudioValidationException(f"Network error while downloading audio: {str(e)}")
 
-        self.validate_file_metadata(dest_path, filename=url_path)
+        self.validate_file_metadata(dest_path)
         return dest_path
 
 

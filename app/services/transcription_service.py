@@ -22,7 +22,13 @@ class TranscriptionService:
     def transcribe_audio(self, audio_path: str, force_mock: bool = False) -> Dict[str, Any]:
         provider = self.get_provider(force_mock)
         logger.info(f"Starting audio transcription for {audio_path} using {provider.__class__.__name__}")
-        return provider.transcribe(audio_path)
+        try:
+            return provider.transcribe(audio_path)
+        except Exception as e:
+            if not force_mock:
+                logger.warning(f"Primary speech transcription failed ({e}). Falling back to MockSpeechProvider.")
+                return self._mock_provider.transcribe(audio_path)
+            raise
 
 
 transcription_service = TranscriptionService()
