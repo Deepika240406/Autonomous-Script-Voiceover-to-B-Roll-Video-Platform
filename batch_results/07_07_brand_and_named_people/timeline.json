@@ -1,0 +1,64 @@
+{
+  "job_id": "f8db5b23-89cf-422c-914f-7132c4c6e2de",
+  "total_scenes": 2,
+  "scenes": [
+    {
+      "scene_index": 0,
+      "narration_text": "Technology visionary leaders like Elon Musk and Steve Jobs championed relentless product innovation.",
+      "start_time": 0.0,
+      "end_time": 7.379,
+      "duration": 7.379,
+      "visual_description": "Technology visionary leaders like Elon Musk and Steve Jobs championed relentless product innovation.",
+      "visual_hint": null,
+      "search_query": "technology leader giving visionary keynote presentation on stage",
+      "semantic_context": "Technology visionary leaders like Elon Musk and Steve Jobs championed relentless product innovation. Today modern smartphones from Apple and Android connect billions worldwide.",
+      "selected_footage": {
+        "clip_id": "mock_executive_speech_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_executive_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'technology leader giving visionary keynote presentation on stage' with semantic relevance 1.71/5.0",
+        "relevance_score": 1.71,
+        "warnings": [
+          "Named person 'elon musk' detected. Policy: Realistic depiction of real people prohibited. Selected neutral contextual imagery without celebrity likeness or endorsement.",
+          "Named person 'steve jobs' detected. Policy: Realistic depiction of real people prohibited. Selected neutral contextual imagery without celebrity likeness or endorsement."
+        ]
+      },
+      "warnings": [
+        "Named person 'elon musk' detected. Policy: Realistic depiction of real people prohibited. Selected neutral contextual imagery without celebrity likeness or endorsement.",
+        "Named person 'steve jobs' detected. Policy: Realistic depiction of real people prohibited. Selected neutral contextual imagery without celebrity likeness or endorsement."
+      ]
+    },
+    {
+      "scene_index": 1,
+      "narration_text": "Today modern smartphones from Apple and Android connect billions worldwide.",
+      "start_time": 7.379,
+      "end_time": 13.056,
+      "duration": 5.677,
+      "visual_description": "Today modern smartphones from Apple and Android connect billions worldwide.",
+      "visual_hint": null,
+      "search_query": "modern innovative tech product in sleek workspace",
+      "semantic_context": "Technology visionary leaders like Elon Musk and Steve Jobs championed relentless product innovation. Today modern smartphones from Apple and Android connect billions worldwide.",
+      "selected_footage": {
+        "clip_id": "mock_tech_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_tech_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'modern innovative tech product in sleek workspace' with semantic relevance 1.2/5.0",
+        "relevance_score": 1.2,
+        "warnings": [
+          "Brand 'apple' detected. Policy: Fake brand logos prohibited. Selected generic modern industry footage without implied endorsement."
+        ]
+      },
+      "warnings": [
+        "Brand 'apple' detected. Policy: Fake brand logos prohibited. Selected generic modern industry footage without implied endorsement."
+      ]
+    }
+  ]
+}

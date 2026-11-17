@@ -1,0 +1,7 @@
+1
+00:00:00,000 --> 00:00:06,291
+Artificial intelligence algorithms analyze massive data streams in real time.
+
+2
+00:00:06,291 --> 00:00:11,952
+Cross-functional teams collaborate closely to design user-friendly digital tools.

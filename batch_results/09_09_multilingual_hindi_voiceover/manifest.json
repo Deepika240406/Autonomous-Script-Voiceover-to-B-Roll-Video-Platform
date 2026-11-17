@@ -1,0 +1,76 @@
+{
+  "job_id": "85970096-2387-4915-8f85-56d01718bd83",
+  "engine_version": "1.0.0",
+  "environment": "production",
+  "input_type": "script",
+  "requested_aspect_ratios": [
+    "16:9"
+  ],
+  "style_prompt": "dynamic technology and entrepreneurial growth",
+  "avoid_rules": [
+    "people's faces"
+  ],
+  "models_and_providers": {
+    "transcription": {
+      "model": "whisper",
+      "size": "base",
+      "device": "cpu"
+    },
+    "tts": {
+      "provider": "edge_tts",
+      "voice": "hi-IN-female"
+    },
+    "semantic_embeddings": {
+      "model": "all-MiniLM-L6-v2",
+      "similarity_engine": "sentence-transformers / cosine"
+    },
+    "footage_sources": [
+      {
+        "name": "pexels",
+        "status": "unconfigured"
+      },
+      {
+        "name": "pixabay",
+        "status": "unconfigured"
+      },
+      {
+        "name": "incubrix_mock_commercial_library",
+        "status": "active"
+      },
+      {
+        "name": "procedural_local_fallback",
+        "status": "active"
+      }
+    ]
+  },
+  "processing_timings_seconds": {
+    "audio_preparation": 4.18,
+    "transcription": 0.0,
+    "scene_segmentation": 0.001,
+    "footage_retrieval": 0.006,
+    "captions": 0.003,
+    "video_rendering": 6.53
+  },
+  "cost_estimates_usd": {
+    "tts_synthesis": 0.00188,
+    "footage_licensing": 0.0,
+    "compute_rendering": 0.00021,
+    "total_estimated_usd": 0.0021,
+    "cost_per_video_minute_usd": 0.0111
+  },
+  "licensing_and_rights": {
+    "commercial_usable": true,
+    "all_footage_licence_verified": true,
+    "ai_generated_assets_present": false,
+    "summary": "All footage and synthesized audio strictly adhere to commercial use permissions."
+  },
+  "warnings_and_fallback_decisions": [],
+  "output_files": {
+    "videos": {
+      "16:9": "/api/v1/storage/jobs/85970096-2387-4915-8f85-56d01718bd83/video_16_9.mp4"
+    },
+    "captions": null,
+    "timeline": null,
+    "manifest": null
+  }
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "name": "01_saas_cloud_promo",
+    "job_id": "3e7dc9b1-6127-4b05-8c18-902f225b6c2b",
+    "status": "succeeded",
+    "elapsed_seconds": 56.24,
+    "scenes_count": 2,
+    "avg_relevance": 1.81,
+    "cost_estimate_usd": 0.004,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\01_01_saas_cloud_promo"
+  },
+  {
+    "name": "02_financial_sales_growth",
+    "job_id": "3591fdb0-f00a-49d2-80ac-c0d69aa6426d",
+    "status": "succeeded",
+    "elapsed_seconds": 30.14,
+    "scenes_count": 2,
+    "avg_relevance": 1.48,
+    "cost_estimate_usd": 0.003,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\02_02_financial_sales_growth"
+  },
+  {
+    "name": "03_abstract_trust_patience",
+    "job_id": "a6e0d035-8503-4eee-87c9-166ad22f23e4",
+    "status": "succeeded",
+    "elapsed_seconds": 40.31,
+    "scenes_count": 2,
+    "avg_relevance": 1.94,
+    "cost_estimate_usd": 0.003,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\03_03_abstract_trust_patience"
+  },
+  {
+    "name": "04_python_developer_tutorial",
+    "job_id": "318b0b06-137e-4a20-abfa-9b2f2aa41cb1",
+    "status": "succeeded",
+    "elapsed_seconds": 12.06,
+    "scenes_count": 2,
+    "avg_relevance": 2.09,
+    "cost_estimate_usd": 0.0028,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\04_04_python_developer_tutorial"
+  },
+  {
+    "name": "05_riverbank_nature_story",
+    "job_id": "a65c5e7c-3823-4551-b130-5e9b57cdee49",
+    "status": "succeeded",
+    "elapsed_seconds": 12.53,
+    "scenes_count": 2,
+    "avg_relevance": 2.0,
+    "cost_estimate_usd": 0.0026,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\05_05_riverbank_nature_story"
+  },
+  {
+    "name": "06_sensitive_community_news",
+    "job_id": "03106a59-f8dd-44c6-ba09-b45069892d67",
+    "status": "succeeded",
+    "elapsed_seconds": 42.64,
+    "scenes_count": 2,
+    "avg_relevance": 1.46,
+    "cost_estimate_usd": 0.0032,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\06_06_sensitive_community_news"
+  },
+  {
+    "name": "07_brand_and_named_people",
+    "job_id": "f8db5b23-89cf-422c-914f-7132c4c6e2de",
+    "status": "succeeded",
+    "elapsed_seconds": 12.65,
+    "scenes_count": 2,
+    "avg_relevance": 1.46,
+    "cost_estimate_usd": 0.0029,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\07_07_brand_and_named_people"
+  },
+  {
+    "name": "08_incubrix_scene_list",
+    "job_id": "5936085e-19fa-49d2-ac85-8b4d7337ecc2",
+    "status": "succeeded",
+    "elapsed_seconds": 40.38,
+    "scenes_count": 2,
+    "avg_relevance": 2.1,
+    "cost_estimate_usd": 0.0032,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\08_08_incubrix_scene_list"
+  },
+  {
+    "name": "09_multilingual_hindi_voiceover",
+    "job_id": "85970096-2387-4915-8f85-56d01718bd83",
+    "status": "succeeded",
+    "elapsed_seconds": 12.23,
+    "scenes_count": 1,
+    "avg_relevance": 1.2,
+    "cost_estimate_usd": 0.0021,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\09_09_multilingual_hindi_voiceover"
+  },
+  {
+    "name": "10_multilingual_tamil_voiceover",
+    "job_id": "90b15979-792c-4549-ba9e-e75b5a421cb8",
+    "status": "succeeded",
+    "elapsed_seconds": 8.44,
+    "scenes_count": 2,
+    "avg_relevance": 1.2,
+    "cost_estimate_usd": 0.002,
+    "warnings": [],
+    "artifacts_folder": "batch_results\\10_10_multilingual_tamil_voiceover"
+  }
+]

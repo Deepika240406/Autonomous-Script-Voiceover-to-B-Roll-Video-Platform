@@ -1,0 +1,127 @@
+import os
+import json
+
+
+TEST_INPUTS = [
+    {
+        "name": "01_saas_cloud_promo",
+        "category": "product_promo",
+        "script": "Modern cloud computing infrastructure empowers global engineering teams to deploy software at lightning speed. Real-time telemetry and automated server scaling ensure seamless performance 24/7.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9", "9:16"],
+        "style": "bright, modern, real-world footage",
+        "avoid": ["people's faces", "alcohol"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "02_financial_sales_growth",
+        "category": "business_analytics_statistics",
+        "script": "Enterprise sales grew 40% in 2025 across all international markets. Disciplined capital allocation and rising profit margins propelled historic quarterly revenue.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9", "1:1"],
+        "style": "corporate, clean financial charts and modern office",
+        "avoid": ["gambling", "alcohol"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "03_abstract_trust_patience",
+        "category": "abstract_concepts",
+        "script": "Trust is earned slowly through daily consistency. Real success requires patience and quiet discipline, laying one solid foundation stone at a time.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9", "9:16"],
+        "style": "cinematic, inspiring metaphors",
+        "avoid": ["people's faces"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "04_python_developer_tutorial",
+        "category": "ambiguous_word_python",
+        "script": "Writing clean Python programming code simplifies complex machine learning pipelines. Developers write reusable modular functions inside high-performance virtual environments.",
+        "voice": "en-US-male",
+        "aspect_ratios": ["16:9"],
+        "style": "developer workspace, modern tech display",
+        "avoid": ["snakes", "reptiles"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "05_riverbank_nature_story",
+        "category": "ambiguous_word_bank",
+        "script": "Sunlight reflects across the calm river bank as fresh water flows gently past the forest edge. Native wildlife flourishes along the tranquil natural sanctuary.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9"],
+        "style": "organic, lush green nature photography",
+        "avoid": ["pollution", "city traffic"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "06_sensitive_community_news",
+        "category": "sensitive_news_respectful",
+        "script": "Following yesterday's solemn tragic loss, community members gathered at dawn in peaceful unity. A quiet candlelit tribute honoured the memories of loved ones.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9", "9:16"],
+        "style": "somber, respectful, dignified symbolic visuals",
+        "avoid": ["graphic content", "weapons", "accidents"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "07_brand_and_named_people",
+        "category": "celebrity_and_brand_safety",
+        "script": "Technology visionary leaders like Elon Musk and Steve Jobs championed relentless product innovation. Today modern smartphones from Apple and Android connect billions worldwide.",
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9"],
+        "style": "sleek consumer technology, stage presentation",
+        "avoid": ["celebrity deepfakes", "fake logos"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "08_incubrix_scene_list",
+        "category": "scene_list_with_visual_hints",
+        "scenes": [
+            {
+                "text": "Artificial intelligence algorithms analyze massive data streams in real time.",
+                "visual_hint": "data center servers with glowing blue fiber optic cables"
+            },
+            {
+                "text": "Cross-functional teams collaborate closely to design user-friendly digital tools.",
+                "visual_hint": "diverse engineers discussing ideas around conference table"
+            }
+        ],
+        "voice": "en-IN-female",
+        "aspect_ratios": ["16:9", "9:16"],
+        "style": "modern technology workspace",
+        "avoid": ["people's faces"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "09_multilingual_hindi_voiceover",
+        "category": "multilingual_hindi",
+        "script": "भारत में डिजिटल तकनीक और नवाचार का तेजी से विस्तार हो रहा है। उद्यमी आधुनिक सॉफ्टवेयर की मदद से नए उद्योग स्थापित कर रहे हैं।",
+        "voice": "hi-IN-female",
+        "aspect_ratios": ["16:9"],
+        "style": "dynamic technology and entrepreneurial growth",
+        "avoid": ["people's faces"],
+        "captions": {"burn_in": True, "srt": True}
+    },
+    {
+        "name": "10_multilingual_tamil_voiceover",
+        "category": "multilingual_tamil",
+        "script": "தொழில்நுட்ப புரட்சி உலகெங்கும் புதிய வாய்ப்புகளை உருவாக்குகிறது. புதுமையான சிந்தனைகள் வணிக வளர்ச்சியை விரைவுபடுத்துகின்றன.",
+        "voice": "ta-IN-female",
+        "aspect_ratios": ["16:9"],
+        "style": "global digital innovation and business progress",
+        "avoid": ["people's faces"],
+        "captions": {"burn_in": True, "srt": True}
+    }
+]
+
+
+def main():
+    os.makedirs("tests/fixtures", exist_ok=True)
+    out_file = "tests/fixtures/10_core_test_inputs.json"
+    with open(out_file, "w", encoding="utf-8") as f:
+        json.dump(TEST_INPUTS, f, indent=2, ensure_ascii=False)
+    print(f"Generated {len(TEST_INPUTS)} test fixtures in {out_file}")
+
+
+if __name__ == "__main__":
+    main()

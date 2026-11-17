@@ -1,0 +1,54 @@
+{
+  "job_id": "3591fdb0-f00a-49d2-80ac-c0d69aa6426d",
+  "total_scenes": 2,
+  "scenes": [
+    {
+      "scene_index": 0,
+      "narration_text": "Enterprise sales grew 40% in 2025 across all international markets.",
+      "start_time": 0.0,
+      "end_time": 6.503,
+      "duration": 6.503,
+      "visual_description": "Enterprise sales grew 40% in 2025 across all international markets.",
+      "visual_hint": null,
+      "search_query": "business analytics dashboard displaying growth metrics and charts",
+      "semantic_context": "Enterprise sales grew 40% in 2025 across all international markets. Disciplined capital allocation and rising profit margins propelled historic quarterly revenue.",
+      "selected_footage": {
+        "clip_id": "mock_finance_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_finance_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'business analytics dashboard displaying growth metrics and charts' with semantic relevance 1.77/5.0",
+        "relevance_score": 1.77,
+        "warnings": []
+      },
+      "warnings": []
+    },
+    {
+      "scene_index": 1,
+      "narration_text": "Disciplined capital allocation and rising profit margins propelled historic quarterly revenue.",
+      "start_time": 6.503,
+      "end_time": 13.656,
+      "duration": 7.153,
+      "visual_description": "Disciplined capital allocation and rising profit margins propelled historic quarterly revenue.",
+      "visual_hint": null,
+      "search_query": "Disciplined capital allocation rising profit margins",
+      "semantic_context": "Enterprise sales grew 40% in 2025 across all international markets. Disciplined capital allocation and rising profit margins propelled historic quarterly revenue.",
+      "selected_footage": {
+        "clip_id": "mock_tech_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_tech_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'Disciplined capital allocation rising profit margins' with semantic relevance 1.2/5.0",
+        "relevance_score": 1.2,
+        "warnings": []
+      },
+      "warnings": []
+    }
+  ]
+}

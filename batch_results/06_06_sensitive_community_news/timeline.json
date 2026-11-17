@@ -1,0 +1,58 @@
+{
+  "job_id": "03106a59-f8dd-44c6-ba09-b45069892d67",
+  "total_scenes": 2,
+  "scenes": [
+    {
+      "scene_index": 0,
+      "narration_text": "Following yesterday's solemn tragic loss, community members gathered at dawn in peaceful unity.",
+      "start_time": 0.0,
+      "end_time": 6.593,
+      "duration": 6.593,
+      "visual_description": "Following yesterday's solemn tragic loss, community members gathered at dawn in peaceful unity.",
+      "visual_hint": null,
+      "search_query": "peaceful somber dawn over quiet landscape memorial reflection",
+      "semantic_context": "Following yesterday's solemn tragic loss, community members gathered at dawn in peaceful unity. A quiet candlelit tribute honoured the memories of loved ones.",
+      "selected_footage": {
+        "clip_id": "mock_memorial_dawn_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_memorial_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'peaceful somber dawn over quiet landscape memorial reflection' with semantic relevance 1.71/5.0",
+        "relevance_score": 1.71,
+        "warnings": [
+          "Sensitive topic 'tragic' detected. Policy: Respectful, non-sensational, neutral symbolic footage selected."
+        ]
+      },
+      "warnings": [
+        "Sensitive topic 'tragic' detected. Policy: Respectful, non-sensational, neutral symbolic footage selected."
+      ]
+    },
+    {
+      "scene_index": 1,
+      "narration_text": "A quiet candlelit tribute honoured the memories of loved ones.",
+      "start_time": 6.593,
+      "end_time": 11.664,
+      "duration": 5.071,
+      "visual_description": "A quiet candlelit tribute honoured the memories of loved ones.",
+      "visual_hint": null,
+      "search_query": "quiet candlelit tribute honoured memories loved",
+      "semantic_context": "Following yesterday's solemn tragic loss, community members gathered at dawn in peaceful unity. A quiet candlelit tribute honoured the memories of loved ones.",
+      "selected_footage": {
+        "clip_id": "mock_tech_01",
+        "provider": "mock_provider",
+        "source_url": "mock://sample_tech_01.mp4",
+        "licence_name": "IncuBrix Verified Commercial Mock Licence",
+        "licence_url": "https://incubrix.com/licences/commercial-use",
+        "attribution": "IncuBrix Creative Studios (Mock Collection)",
+        "is_ai_generated": false,
+        "selection_reason": "Selected from mock_provider matching visual concept 'quiet candlelit tribute honoured memories loved' with semantic relevance 1.2/5.0",
+        "relevance_score": 1.2,
+        "warnings": []
+      },
+      "warnings": []
+    }
+  ]
+}
