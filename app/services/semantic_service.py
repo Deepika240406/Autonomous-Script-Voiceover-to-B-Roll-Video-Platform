@@ -1,6 +1,7 @@
 import re
 from typing import Dict, Any, List, Tuple, Optional
 from app.providers.embeddings.sentence_transformer_provider import SentenceTransformerEmbeddingsProvider
+from app.services.llm_scene_service import llm_scene_service
 from app.core.logging import logger
 
 
@@ -130,10 +131,15 @@ class SemanticService:
             return "health"
         return "general"
 
-    def analyze_hard_cases(self, text: str, visual_hint: Optional[str] = None) -> Dict[str, Any]:
+    def analyze_hard_cases(
+        self,
+        text: str,
+        visual_hint: Optional[str] = None,
+        overall_context: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Analyzes text for abstract concepts, statistics, ambiguous terms,
-        celebrities, brands, and sensitive topics.
+        celebrities, brands, and sensitive topics using LLM scene understanding.
         """
         lower = text.lower()
         warnings: List[str] = []
@@ -141,7 +147,7 @@ class SemanticService:
         neutralized_entities: List[str] = []
         search_candidates: List[str] = []
         detected_concept = None
-        domain = self.detect_domain(text)
+        domain = self.detect_domain(f"{text} {overall_context or ''}")
 
         # 1. Real people & brand checks (Section 8.D)
         for person in REAL_PEOPLE_NAMES:
@@ -221,11 +227,20 @@ class SemanticService:
                 detected_concept = concept
                 search_candidates.extend(visual_list)
 
-        # 6. Include user visual hint if available
+        # 6. LLM-Powered Scene Understanding & Visual Description Generation
+        llm_analysis = llm_scene_service.understand_scene(
+            narration_text=text,
+            overall_context=overall_context,
+            visual_hint=visual_hint,
+        )
+        visual_desc = llm_analysis["visual_description"]
+        search_candidates.extend(llm_analysis["descriptive_queries"])
+
+        # 7. Include user visual hint if available
         if visual_hint:
             search_candidates.insert(0, visual_hint.strip())
 
-        # 7. Domain-specific semantic concept queries
+        # 8. Domain-specific semantic concept queries
         if domain == "tech":
             if any(w in lower for w in ["password", "passwords", "authentication", "lock"]):
                 search_candidates.append("password security authentication")
@@ -243,7 +258,7 @@ class SemanticService:
                 search_candidates.append("artificial intelligence technology")
                 search_candidates.append("data analytics dashboard")
 
-        # 8. Extract substantive visual nouns
+        # 9. Extract substantive visual nouns
         clean_text_query = re.sub(r"[^\w\s]", " ", text)
         substantive_words = [
             w for w in clean_text_query.split()
@@ -270,6 +285,7 @@ class SemanticService:
             "neutralized_entities": neutralized_entities,
             "detected_concept": detected_concept,
             "domain": domain,
+            "visual_description": visual_desc,
         }
 
     def is_domain_incompatible(self, metadata_text: str, expected_domain: str) -> Tuple[bool, Optional[str]]:

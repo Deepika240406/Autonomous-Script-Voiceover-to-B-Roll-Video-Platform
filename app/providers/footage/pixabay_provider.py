@@ -19,24 +19,25 @@ class PixabayFootageProvider(BaseFootageProvider):
     def provider_name(self) -> str:
         return "pixabay"
 
-    async def search(self, query: str, min_duration: float = 3.0, count: int = 5) -> List[CandidateClip]:
+    async def search(self, query: str, min_duration: float = 3.0, count: int = 20) -> List[CandidateClip]:
         key = self.api_key or settings.PIXABAY_API_KEY
         if not key:
             return []
 
-        # Focus query on 2-3 most relevant words
+        # Keep search query focused and descriptive
         words = [w for w in query.split() if len(w) > 2]
-        clean_q = " ".join(words[:3]) if words else query
+        clean_q = " ".join(words[:4]) if words else query
 
         candidates: List[CandidateClip] = []
 
         try:
-            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
-                # 1. First attempt: Search Pixabay Videos
+            async with httpx.AsyncClient(timeout=12.0, follow_redirects=True) as client:
+                # 1. Fetch 15-20 Candidate Videos from Pixabay
+                target_fetch = max(20, count)
                 video_params = {
                     "key": key,
                     "q": clean_q,
-                    "per_page": max(10, count * 2),
+                    "per_page": target_fetch,
                     "video_type": "film",
                 }
                 v_resp = await client.get(self.video_url, params=video_params)
@@ -44,7 +45,6 @@ class PixabayFootageProvider(BaseFootageProvider):
                     hits = v_resp.json().get("hits", [])
                     for h in hits:
                         duration = float(h.get("duration", 0))
-                        # Even if clip is 2s+, FFmpeg loops it to scene duration
                         if duration < 2.0:
                             continue
 
@@ -73,14 +73,14 @@ class PixabayFootageProvider(BaseFootageProvider):
                         if len(candidates) >= count:
                             break
 
-                # 2. Second attempt: If video count is low, supplement with high-res Photos
-                if len(candidates) < count:
+                # 2. If candidates are fewer than 10, supplement with high-res Photos
+                if len(candidates) < 10:
                     photo_params = {
                         "key": key,
                         "q": clean_q,
                         "image_type": "photo",
                         "orientation": "horizontal",
-                        "per_page": max(10, count * 2),
+                        "per_page": target_fetch,
                     }
                     p_resp = await client.get(self.photo_url, params=photo_params)
                     if p_resp.status_code == 200:
@@ -113,6 +113,7 @@ class PixabayFootageProvider(BaseFootageProvider):
         except Exception as e:
             logger.error(f"Pixabay search exception: {e}")
 
+        logger.info(f"Pixabay retrieved {len(candidates)} candidate clips for query '{clean_q}'")
         return candidates
 
     async def download_clip(self, clip: CandidateClip, dest_path: str) -> str:
@@ -121,7 +122,6 @@ class PixabayFootageProvider(BaseFootageProvider):
         is_photo = clip.clip_id.startswith("pixabay_photo_") or any(clip.download_url.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png"])
 
         if is_photo:
-            # Download image first, then convert with Ken Burns pan/zoom to high-quality MP4
             temp_img = dest_path + ".temp.jpg"
             async with httpx.AsyncClient(timeout=45.0, follow_redirects=True) as client:
                 async with client.stream("GET", clip.download_url) as resp:
@@ -131,7 +131,6 @@ class PixabayFootageProvider(BaseFootageProvider):
                         async for chunk in resp.aiter_bytes(chunk_size=65536):
                             f.write(chunk)
 
-            # Animate photo using smooth Ken Burns zoom effect
             dur = max(float(clip.duration), 8.0)
             frames = int(dur * 30)
             cmd = [

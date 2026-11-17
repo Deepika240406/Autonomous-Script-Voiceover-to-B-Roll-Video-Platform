@@ -11,17 +11,13 @@ _model = None
 def get_st_model():
     global _model
     if _model is None:
-        # Only attempt to load SentenceTransformer if an explicit local model path exists
-        # or if OFFLINE_TEST is not active
-        if os.environ.get("USE_REAL_SENTENCE_TRANSFORMER") == "true":
-            try:
-                from sentence_transformers import SentenceTransformer
-                logger.info(f"Loading SentenceTransformer '{settings.SENTENCE_TRANSFORMER_MODEL}'...")
-                _model = SentenceTransformer(settings.SENTENCE_TRANSFORMER_MODEL, device=settings.EMBEDDINGS_DEVICE)
-            except Exception as e:
-                logger.warning(f"Could not load SentenceTransformer ({e}). Using ContextualSimilarityProvider.")
-                _model = False
-        else:
+        try:
+            from sentence_transformers import SentenceTransformer
+            logger.info(f"Initializing SentenceTransformer '{settings.SENTENCE_TRANSFORMER_MODEL}' on '{settings.EMBEDDINGS_DEVICE}'...")
+            _model = SentenceTransformer(settings.SENTENCE_TRANSFORMER_MODEL, device=settings.EMBEDDINGS_DEVICE)
+            logger.info("SentenceTransformer successfully loaded!")
+        except Exception as e:
+            logger.warning(f"Could not load SentenceTransformer ({e}). Using ContextualSimilarityProvider.")
             _model = False
     return _model
 
@@ -48,7 +44,9 @@ class SentenceTransformerEmbeddingsProvider(BaseEmbeddingsProvider):
                 emb1 = model.encode(text1, convert_to_numpy=True)
                 emb2 = model.encode(text2, convert_to_numpy=True)
                 cosine = float(np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2)))
-                return round(float(max(0.0, (cosine + 1.0) / 2.0)), 4)
+                # Calibrate cosine similarity (-1.0 to 1.0) into normalized semantic score [0.0, 1.0]
+                norm_sim = float(max(0.0, (cosine + 0.1) / 1.1))
+                return round(norm_sim, 4)
             except Exception as e:
                 logger.warning(f"ST compute similarity error: {e}")
         return self.fallback.compute_similarity(text1, text2)

@@ -56,9 +56,15 @@ class FootageService:
         for scene in scenes:
             logger.info(f"Retrieving footage for Scene {scene.scene_index}: '{scene.narration_text[:40]}...'")
 
-            # 1. Semantic context analysis and query expansion
-            analysis = semantic_service.analyze_hard_cases(scene.narration_text, scene.visual_hint)
+            # 1. Semantic context analysis, LLM visual description & query expansion
+            analysis = semantic_service.analyze_hard_cases(
+                text=scene.narration_text,
+                visual_hint=scene.visual_hint,
+                overall_context=scene.semantic_context
+            )
             scene.search_query = analysis["primary_query"]
+            if analysis.get("visual_description"):
+                scene.visual_description = analysis["visual_description"]
             scene.warnings.extend(analysis["warnings"])
 
             # 2. Candidate retrieval across providers using tiered hierarchy
@@ -88,7 +94,8 @@ class FootageService:
                             break
 
                         try:
-                            results = await provider.search(query=query, min_duration=scene.duration, count=5)
+                            # Fetch 10-20 candidates per scene
+                            results = await provider.search(query=query, min_duration=scene.duration, count=20)
                             valid_candidates = []
                             for cand in results:
                                 # Rule: No clip used twice in one video
@@ -110,20 +117,20 @@ class FootageService:
                                     logger.info(f"Candidate {cand.clip_id} rejected due to domain mismatch: '{domain_reason}'")
                                     continue
 
-                                # Compute semantic relevance score (1.0 - 5.0)
+                                # Compute Sentence-BERT semantic relevance score (1.0 - 5.0)
                                 rel_score = semantic_service.compute_relevance(
-                                    scene_text=scene.narration_text,
+                                    scene_text=scene.visual_description or scene.narration_text,
                                     candidate_description=metadata_str,
                                     visual_hint=scene.visual_hint
                                 )
 
-                                # Reject weak matches (unless internal fallback provider)
-                                min_rel = 1.2 if tier_name == "external" else 1.0
+                                # Relevance validation bar (reject poor matches)
+                                min_rel = 1.8 if tier_name == "external" else 1.0
                                 if rel_score >= min_rel:
                                     valid_candidates.append((rel_score, cand, metadata_str))
 
                             if valid_candidates:
-                                # Rank candidates by semantic relevance score descending
+                                # Rank candidates by Sentence-BERT semantic relevance score descending
                                 valid_candidates.sort(key=lambda x: x[0], reverse=True)
                                 best_rel_score, best_cand, _ = valid_candidates[0]
 
@@ -136,7 +143,7 @@ class FootageService:
 
                                 selection_reason = (
                                     f"Selected from {best_cand.provider} matching visual concept '{query}' "
-                                    f"with semantic relevance {best_rel_score}/5.0"
+                                    f"with Sentence-BERT relevance {best_rel_score}/5.0"
                                 )
 
                                 selected_clip_metadata = ClipMetadata(
@@ -158,6 +165,11 @@ class FootageService:
                                     warnings=list(scene.warnings),
                                 )
                                 break
+                            else:
+                                logger.info(
+                                    f"Query '{query}' yielded {len(results)} candidate clips but none satisfied relevance bar ({min_rel}). "
+                                    "Rejecting poor matches and searching next alternative descriptive query..."
+                                )
                         except Exception as e:
                             logger.warning(f"Provider {provider.provider_name} search/download failed: {e}. Moving to next.")
                             scene.warnings.append(f"Provider {provider.provider_name} error: {str(e)}")
