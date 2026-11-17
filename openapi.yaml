@@ -1,0 +1,595 @@
+openapi: 3.1.0
+info:
+  title: IncuBrix B-Roll Video Engine
+  description: Production Script & Voiceover to B-roll Video Engine for IncuBrix Assessment
+    3
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      tags:
+      - System
+      summary: Health Check
+      description: Standard health check endpoint returning 200 OK when service is
+        running.
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /ready:
+    get:
+      tags:
+      - System
+      summary: Readiness Check
+      description: Readiness check verifying FFmpeg binary and storage accessibility.
+      operationId: readiness_check_ready_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/storage/{file_path}:
+    get:
+      tags:
+      - Storage
+      summary: Serve Storage File
+      description: Serves stored output videos, manifests, captions, and timelines.
+      operationId: serve_storage_file_api_v1_storage__file_path__get
+      parameters:
+      - name: file_path
+        in: path
+        required: true
+        schema:
+          type: string
+          title: File Path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs:
+    post:
+      tags:
+      - B-Roll Jobs
+      summary: Submit B-roll video generation job
+      description: 'Submits an asynchronous B-roll video creation job from script,
+        scenes, or audio URL.
+
+        Returns HTTP 202 with job_id and status URL.
+
+        Safe retries supported via Idempotency-Key.'
+      operationId: create_broll_job_api_v1_jobs_post
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency-Key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/BrollJobCreateRequest'
+              - type: 'null'
+              title: Body
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrollJobCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/upload:
+    post:
+      tags:
+      - B-Roll Jobs
+      summary: Submit B-roll job with audio file upload
+      description: Submits an asynchronous B-roll job with multipart voiceover audio
+        file upload.
+      operationId: create_broll_job_with_upload_api_v1_jobs_upload_post
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_create_broll_job_with_upload_api_v1_jobs_upload_post'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrollJobCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/{job_id}:
+    get:
+      tags:
+      - B-Roll Jobs
+      summary: Get job execution status and result links
+      operationId: get_job_status_api_v1_jobs__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrollJobStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/jobs/{job_id}/scenes/{scene_index}/replace:
+    post:
+      tags:
+      - B-Roll Jobs
+      summary: 'Advanced: Swap clip for an individual scene and perform rapid re-render'
+      description: 'Advanced feature: Replaces the footage of a specific scene, re-rendering
+        only
+
+        the affected scene clip and reassembling the video in a fraction of full-render
+        time.'
+      operationId: replace_scene_clip_api_v1_jobs__job_id__scenes__scene_index__replace_post
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      - name: scene_index
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Scene Index
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClipReplacementRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/broll/jobs:
+    post:
+      tags:
+      - B-Roll Jobs
+      summary: Submit B-roll video job (Brief route)
+      description: 'Submits an asynchronous B-roll video creation job from script,
+        scenes, or audio URL.
+
+        Returns HTTP 202 with job_id and status URL.
+
+        Safe retries supported via Idempotency-Key.'
+      operationId: create_broll_job_api_v1_broll_jobs_post
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency-Key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/BrollJobCreateRequest'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /:
+    get:
+      tags:
+      - Web UI
+      summary: Get Web Dashboard
+      description: 'Intuitive, responsive web interface for evaluating the engine,
+        submitting jobs,
+
+        previewing videos, inspecting timelines, and testing clip replacement.'
+      operationId: get_web_dashboard__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+components:
+  schemas:
+    Body_create_broll_job_with_upload_api_v1_jobs_upload_post:
+      properties:
+        audio_file:
+          type: string
+          format: binary
+          title: Audio File
+        voice:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice
+          default: en-IN-female
+        aspect_ratios:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspect Ratios
+          default: '["16:9"]'
+        style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Style
+          default: bright, modern, real-world footage
+        avoid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avoid
+          default: '[]'
+        captions_burn_in:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Captions Burn In
+          default: true
+        captions_srt:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Captions Srt
+          default: true
+        callback_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Callback Url
+      type: object
+      required:
+      - audio_file
+      title: Body_create_broll_job_with_upload_api_v1_jobs_upload_post
+    BrollJobCreateRequest:
+      properties:
+        audio_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Audio Url
+          description: Direct URL to voiceover audio file (mp3, wav, m4a)
+        script:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Script
+          description: Plain text narration script for automatic TTS synthesis
+        scenes:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SceneInput'
+            type: array
+          - type: 'null'
+          title: Scenes
+          description: Optional IncuBrix scene list with visual hints
+        voice:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Voice
+          description: Voice profile identifier (e.g. en-IN-female, hi-IN-female,
+            ta-IN-female, en-US-male)
+          default: en-IN-female
+        aspect_ratios:
+          items:
+            type: string
+          type: array
+          title: Aspect Ratios
+          description: 'Requested aspect ratios: 16:9, 9:16, 1:1'
+          default:
+          - '16:9'
+        style:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Style
+          description: Stylistic guidance for footage curation
+          default: bright, modern, real-world footage
+        avoid:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Avoid
+          description: Content keywords or themes to avoid in visual retrieval
+        captions:
+          $ref: '#/components/schemas/CaptionsConfig'
+          description: Caption generation and burn-in settings
+        callback_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Callback Url
+          description: Optional webhook URL to receive job completion callback
+      type: object
+      title: BrollJobCreateRequest
+    BrollJobCreateResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          enum:
+          - queued
+          - running
+          - succeeded
+          - failed
+          title: Status
+          default: queued
+        progress:
+          type: integer
+          title: Progress
+          default: 0
+        status_url:
+          type: string
+          title: Status Url
+      type: object
+      required:
+      - job_id
+      - status_url
+      title: BrollJobCreateResponse
+    BrollJobStatusResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          enum:
+          - queued
+          - running
+          - succeeded
+          - failed
+          title: Status
+        progress:
+          type: integer
+          maximum: 100.0
+          minimum: 0.0
+          title: Progress
+        stage:
+          type: string
+          title: Stage
+        created_at:
+          type: string
+          title: Created At
+        updated_at:
+          type: string
+          title: Updated At
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/JobResultFiles'
+          - type: 'null'
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorDetail'
+          - type: 'null'
+      type: object
+      required:
+      - job_id
+      - status
+      - progress
+      - stage
+      - created_at
+      - updated_at
+      title: BrollJobStatusResponse
+    CaptionsConfig:
+      properties:
+        burn_in:
+          type: boolean
+          title: Burn In
+          description: Whether to burn subtitles directly into video frames
+          default: true
+        srt:
+          type: boolean
+          title: Srt
+          description: Whether to generate and export a standalone captions.srt file
+          default: true
+      type: object
+      title: CaptionsConfig
+    ClipReplacementRequest:
+      properties:
+        clip_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Clip Id
+          description: Identifier of replacement clip or search query override
+        search_query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Search Query
+          description: Explicit new search query for this scene
+        source_provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Provider
+          description: Optional forced provider (pexels, pixabay, mock, local)
+        visual_hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Visual Hint
+          description: Updated visual hint for this scene
+      type: object
+      title: ClipReplacementRequest
+    ErrorDetail:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: UPPER_SNAKE_CASE machine-readable error code
+          example: INVALID_INPUT
+        message:
+          type: string
+          title: Message
+          description: Readable human-friendly error explanation
+          example: Script or audio must be provided.
+        retryable:
+          type: boolean
+          title: Retryable
+          description: Whether the client can retry the request safely
+          default: false
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+          description: Structured contextual diagnostics
+      type: object
+      required:
+      - code
+      - message
+      title: ErrorDetail
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    JobResultFiles:
+      properties:
+        videos:
+          additionalProperties:
+            type: string
+          type: object
+          title: Videos
+          description: URLs/paths for rendered video files keyed by aspect ratio
+        captions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Captions
+          description: URL/path to captions.srt
+        timeline:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timeline
+          description: URL/path to timeline.json
+        manifest:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Manifest
+          description: URL/path to manifest.json
+      type: object
+      title: JobResultFiles
+    SceneInput:
+      properties:
+        text:
+          type: string
+          minLength: 1
+          title: Text
+          description: Narration text for this scene
+        visual_hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Visual Hint
+          description: Intended visual content or direction
+      type: object
+      required:
+      - text
+      title: SceneInput
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
