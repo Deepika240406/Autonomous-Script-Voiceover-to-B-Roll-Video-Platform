@@ -359,6 +359,7 @@ def get_web_dashboard():
         if (primary) {
           const vp = document.getElementById('video-player');
           vp.src = primary;
+          vp.load();
           document.getElementById('player-container').classList.remove('hidden');
         }
       }

@@ -1,5 +1,6 @@
 import edge_tts
 import os
+import re
 from typing import Dict, Any, List
 from app.providers.tts.base import BaseTTSProvider
 from app.utils.ffmpeg import inspect_audio
@@ -32,7 +33,33 @@ class EdgeTTSProvider(BaseTTSProvider):
 
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
 
-        communicate = edge_tts.Communicate(text, voice_id)
+        spoken_text = text
+        # If user requested a Tamil or Hindi voice but provided English Latin text,
+        # automatically translate it to native script so the neural voice speaks genuine Tamil/Hindi
+        has_latin = bool(re.search(r"[a-zA-Z]", text))
+        if has_latin:
+            target_lang = None
+            if voice_id.startswith("ta-IN-") or voice.startswith("ta-"):
+                target_lang = "ta-IN"
+            elif voice_id.startswith("hi-IN-") or voice.startswith("hi-"):
+                target_lang = "hi-IN"
+
+            if target_lang:
+                try:
+                    from deep_translator import MyMemoryTranslator
+                    # Translate sentence by sentence to ensure high fidelity
+                    sentences = [s.strip() for s in re.split(r"(?<=[.!?\n])\s+", text) if s.strip()]
+                    translated_parts = []
+                    translator = MyMemoryTranslator(source="en-GB", target=target_lang)
+                    for s in sentences:
+                        t = translator.translate(s)
+                        translated_parts.append(t if t else s)
+                    spoken_text = " ".join(translated_parts)
+                    logger.info(f"Translated English narration to {target_lang} for voice '{voice_id}': '{spoken_text[:80]}...'")
+                except Exception as e:
+                    logger.warning(f"Translation to {target_lang} encountered: {e}. Proceeding with original script.")
+
+        communicate = edge_tts.Communicate(spoken_text, voice_id)
         submaker = edge_tts.SubMaker()
 
         word_timings: List[Dict[str, Any]] = []
@@ -52,11 +79,12 @@ class EdgeTTSProvider(BaseTTSProvider):
                     })
 
         audio_info = inspect_audio(output_path)
-        logger.info(f"EdgeTTS synthesized {len(text)} chars to {output_path} (duration: {audio_info['duration']:.2f}s)")
+        logger.info(f"EdgeTTS synthesized {len(spoken_text)} chars to {output_path} (duration: {audio_info['duration']:.2f}s, voice: {voice_id})")
 
         return {
             "audio_path": output_path,
             "duration": audio_info["duration"],
             "voice": voice_id,
             "word_timings": word_timings,
+            "spoken_text": spoken_text,
         }

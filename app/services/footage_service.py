@@ -102,6 +102,14 @@ class FootageService:
                                     logger.info(f"Candidate {cand.clip_id} rejected due to avoid rule: '{reason}'")
                                     continue
 
+                                # Rule: Anti-drift domain consistency check
+                                domain_mismatch, domain_reason = semantic_service.is_domain_incompatible(
+                                    metadata_str, analysis.get("domain", "general")
+                                )
+                                if domain_mismatch:
+                                    logger.info(f"Candidate {cand.clip_id} rejected due to domain mismatch: '{domain_reason}'")
+                                    continue
+
                                 # Compute semantic relevance score (1.0 - 5.0)
                                 rel_score = semantic_service.compute_relevance(
                                     scene_text=scene.narration_text,
