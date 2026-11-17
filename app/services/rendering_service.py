@@ -65,7 +65,8 @@ class VideoRenderingService:
 
         cmd.extend([
             "-c:v", "libx264",
-            "-preset", "faster",
+            "-preset", "veryfast",
+            "-threads", "0",
             "-crf", "22",
             "-r", "30",
             "-an",  # strip internal clip audio; narration audio is overlaid in final assembly
@@ -120,7 +121,8 @@ class VideoRenderingService:
 
         cmd.extend([
             "-c:v", "libx264",
-            "-preset", "fast",
+            "-preset", "veryfast",
+            "-threads", "0",
             "-crf", "20",
             "-c:a", "aac",
             "-b:a", "192k",

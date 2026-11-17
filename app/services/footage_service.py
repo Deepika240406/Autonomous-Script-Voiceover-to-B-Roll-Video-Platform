@@ -96,20 +96,18 @@ class FootageService:
                         try:
                             # Fetch 10-20 candidates per scene
                             results = await provider.search(query=query, min_duration=scene.duration, count=20)
-                            valid_candidates = []
+                            # Rule: Filter candidates by used ID, avoid list, and domain consistency
+                            filtered_cands = []
+                            filtered_metas = []
                             for cand in results:
-                                # Rule: No clip used twice in one video
                                 if cand.clip_id in used_clip_ids:
                                     continue
-
-                                # Rule: Avoidance filtering
                                 metadata_str = f"{cand.title} {cand.description} {' '.join(cand.tags)}"
                                 violates, reason = semantic_service.violates_avoid_rules(metadata_str, avoid)
                                 if violates:
                                     logger.info(f"Candidate {cand.clip_id} rejected due to avoid rule: '{reason}'")
                                     continue
 
-                                # Rule: Anti-drift domain consistency check
                                 domain_mismatch, domain_reason = semantic_service.is_domain_incompatible(
                                     metadata_str, analysis.get("domain", "general")
                                 )
@@ -117,17 +115,22 @@ class FootageService:
                                     logger.info(f"Candidate {cand.clip_id} rejected due to domain mismatch: '{domain_reason}'")
                                     continue
 
-                                # Compute Sentence-BERT semantic relevance score (1.0 - 5.0)
-                                rel_score = semantic_service.compute_relevance(
-                                    scene_text=scene.visual_description or scene.narration_text,
-                                    candidate_description=metadata_str,
+                                filtered_cands.append(cand)
+                                filtered_metas.append(metadata_str)
+
+                            valid_candidates = []
+                            if filtered_cands:
+                                # High-speed vectorized batch Sentence-BERT scoring
+                                target_text = scene.visual_description or scene.narration_text
+                                rel_scores = semantic_service.compute_batch_relevance(
+                                    scene_text=target_text,
+                                    candidate_descriptions=filtered_metas,
                                     visual_hint=scene.visual_hint
                                 )
-
-                                # Relevance validation bar (reject poor matches)
                                 min_rel = 1.8 if tier_name == "external" else 1.0
-                                if rel_score >= min_rel:
-                                    valid_candidates.append((rel_score, cand, metadata_str))
+                                for score, cand, meta in zip(rel_scores, filtered_cands, filtered_metas):
+                                    if score >= min_rel:
+                                        valid_candidates.append((score, cand, meta))
 
                             if valid_candidates:
                                 # Rank candidates by Sentence-BERT semantic relevance score descending

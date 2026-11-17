@@ -310,6 +310,16 @@ class SemanticService:
         score = round(1.0 + (sim * 4.0), 2)
         return min(5.0, max(1.0, score))
 
+    def compute_batch_relevance(self, scene_text: str, candidate_descriptions: List[str], visual_hint: Optional[str] = None) -> List[float]:
+        """
+        Vectorized batch relevance computation using Sentence-BERT dense matrix multiplication.
+        """
+        if not candidate_descriptions:
+            return []
+        target = f"{scene_text} {visual_hint or ''}".strip()
+        sims = self.embeddings_provider.compute_batch_similarities(target, candidate_descriptions)
+        return [min(5.0, max(1.0, round(1.0 + (s * 4.0), 2))) for s in sims]
+
     def violates_avoid_rules(self, metadata_text: str, avoid_list: List[str]) -> Tuple[bool, Optional[str]]:
         """
         Checks whether candidate footage metadata violates the user avoid list.
