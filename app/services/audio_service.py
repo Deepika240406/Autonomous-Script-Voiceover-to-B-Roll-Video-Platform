@@ -1,0 +1,102 @@
+import os
+import httpx
+import uuid
+from typing import Dict, Any, Optional
+from app.config import settings
+from app.core.exceptions import (
+    AudioValidationException,
+    AudioCorruptedException,
+    AudioTooLongException,
+    SilentAudioException,
+    MusicOnlyAudioException
+)
+from app.core.security import is_safe_url
+from app.core.logging import logger
+from app.utils.ffmpeg import inspect_audio, analyze_audio_silence_and_energy
+
+
+ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a"}
+ALLOWED_MIME_PREFIXES = {"audio/", "video/mp4", "application/octet-stream"}
+
+
+class AudioService:
+    def __init__(self, work_dir: str = "./storage_root/tmp_audio"):
+        self.work_dir = os.path.abspath(work_dir)
+        os.makedirs(self.work_dir, exist_ok=True)
+
+    def validate_file_metadata(self, file_path: str, filename: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Validates file extension, existence, size, and ffprobe stream metadata.
+        """
+        if not os.path.exists(file_path):
+            raise AudioCorruptedException(f"Audio file '{file_path}' does not exist.")
+
+        size = os.path.getsize(file_path)
+        if size == 0:
+            raise AudioCorruptedException("Audio file is 0 bytes.")
+
+        if size > settings.MAX_UPLOAD_SIZE_BYTES:
+            raise AudioValidationException(
+                f"File size {size} bytes exceeds maximum allowed {settings.MAX_UPLOAD_SIZE_BYTES} bytes."
+            )
+
+        # Validate extension
+        check_name = filename or file_path
+        _, ext = os.path.splitext(check_name.lower())
+        if ext not in ALLOWED_EXTENSIONS:
+            raise AudioValidationException(
+                f"Invalid file extension '{ext}'. Allowed extensions are: {sorted(list(ALLOWED_EXTENSIONS))}"
+            )
+
+        # Probe file via ffprobe
+        info = inspect_audio(file_path)
+
+        # Analyze silence and volume levels
+        vol_info = analyze_audio_silence_and_energy(file_path)
+
+        # If silence duration covers more than 90% of audio, reject as silent
+        if info["duration"] > 3.0 and vol_info["total_silence_duration"] / info["duration"] > 0.90:
+            raise SilentAudioException(
+                f"Audio is over 90% silent ({vol_info['total_silence_duration']:.1f}s of {info['duration']:.1f}s)."
+            )
+
+        return {**info, **vol_info}
+
+    async def download_audio_from_url(self, url: str) -> str:
+        """
+        Safely downloads audio from URL after SSRF validation.
+        """
+        is_safe_url(url, allow_local_for_dev=settings.DEBUG or settings.ENVIRONMENT == "development")
+
+        dest_filename = f"downloaded_{uuid.uuid4().hex[:10]}"
+        # Try to infer extension
+        url_path = url.split("?")[0]
+        _, ext = os.path.splitext(url_path.lower())
+        if ext in ALLOWED_EXTENSIONS:
+            dest_filename += ext
+        else:
+            dest_filename += ".mp3"
+
+        dest_path = os.path.join(self.work_dir, dest_filename)
+
+        try:
+            async with httpx.AsyncClient(timeout=float(settings.REQUEST_TIMEOUT_SECONDS), follow_redirects=True) as client:
+                async with client.stream("GET", url) as resp:
+                    if resp.status_code >= 400:
+                        raise AudioValidationException(f"Failed to download audio from URL: HTTP {resp.status_code}")
+
+                    total_bytes = 0
+                    with open(dest_path, "wb") as f:
+                        async for chunk in resp.aiter_bytes(chunk_size=65536):
+                            total_bytes += len(chunk)
+                            if total_bytes > settings.MAX_UPLOAD_SIZE_BYTES:
+                                raise AudioValidationException("Downloaded audio exceeds maximum file size limit.")
+                            f.write(chunk)
+        except httpx.RequestError as e:
+            raise AudioValidationException(f"Network error while downloading audio: {str(e)}")
+
+        self.validate_file_metadata(dest_path, filename=url_path)
+        return dest_path
+
+
+audio_service = AudioService()
