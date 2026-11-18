@@ -197,6 +197,109 @@ VISUAL_DOMAIN_CONCEPTS = {
                 ]
             )
         ]
+    },
+    "travel_exploration": {
+        "triggers": [
+            "travel", "traveling", "travelling", "explore", "exploring", "exploration",
+            "places", "place", "culture", "cultures", "adventure", "journey",
+            "destination", "destinations", "tourism", "tourist", "tourists", "vacation",
+            "trip", "landmark", "monument", "wanderlust", "world travel", "scenic"
+        ],
+        "scenes": [
+            (
+                "culture",
+                "Vibrant traditional cultural festival with colorful street architecture, historical monuments and diverse cultural heritage",
+                [
+                    "world cultures traditional festival",
+                    "travel culture street market",
+                    "cultural heritage traditional landmarks",
+                    "historic landmark world culture"
+                ]
+            ),
+            (
+                "places",
+                "Cinematic aerial drone shot of scenic world travel destinations, historical landmarks and picturesque cultural places",
+                [
+                    "travel landmark world destination",
+                    "travel explore new places",
+                    "tourist exploring scenic landscape",
+                    "world travel journey adventure"
+                ]
+            ),
+            (
+                "adventure",
+                "Adventurous traveler with backpack exploring breathtaking mountain valley and scenic vista at golden hour",
+                [
+                    "traveler exploring mountains backpack",
+                    "travel adventure scenic landscape",
+                    "wandering traveler exploring new places",
+                    "outdoor travel journey nature"
+                ]
+            ),
+            (
+                "general",
+                "Breathtaking travel montage of diverse global destinations, cultural landmarks and travelers exploring new places",
+                [
+                    "world travel destinations landmark",
+                    "travel tourism explore world",
+                    "scenic travel landscape destination",
+                    "travel wanderlust beautiful places"
+                ]
+            )
+        ]
+    },
+    "nature_environment": {
+        "triggers": [
+            "nature", "forest", "mountain", "mountains", "ocean", "river", "earth",
+            "environment", "green", "trees", "landscape", "wildlife", "sunset", "sunrise"
+        ],
+        "scenes": [
+            (
+                "landscape",
+                "Stunning panoramic view of lush green forest mountains and peaceful flowing river under golden sunlight",
+                [
+                    "mountain landscape nature scenic",
+                    "green forest river flowing",
+                    "scenic nature sunrise valley",
+                    "peaceful wilderness landscape"
+                ]
+            ),
+            (
+                "general",
+                "Breathtaking natural scenery showing clean environment, blue skies and majestic mountains",
+                [
+                    "scenic nature landscape mountains",
+                    "beautiful earth environment nature",
+                    "peaceful forest sunlight trees"
+                ]
+            )
+        ]
+    },
+    "health_wellness": {
+        "triggers": [
+            "health", "healthy", "wellness", "fitness", "exercise", "nutrition",
+            "doctor", "hospital", "medicine", "medical", "treatment", "lifestyle"
+        ],
+        "scenes": [
+            (
+                "fitness",
+                "Active person jogging outdoors in scenic park during sunrise maintaining vibrant healthy lifestyle",
+                [
+                    "fitness workout healthy lifestyle",
+                    "person running morning park exercise",
+                    "wellness meditation healthy living"
+                ]
+            ),
+            (
+                "general",
+                "Modern doctor and healthcare professional consulting patient with compassionate care in bright medical clinic",
+                [
+                    "doctor healthcare hospital clinic",
+                    "healthy nutrition fresh fruit lifestyle",
+                    "modern medical consultation doctor"
+                ]
+            )
+        ]
     }
 }
 
@@ -239,6 +342,9 @@ class LLMSceneUnderstandingService:
                         or (sub_key == "password" and any(k in lower for k in ["password", "passwords", "authentication", "two-factor", "protect"]))
                         or (sub_key == "hacker" and any(k in lower for k in ["hacker", "hackers", "attack", "attacks", "steal", "breach"]))
                         or (sub_key == "network" and any(k in lower for k in ["network", "networks", "data", "infrastructure"]))
+                        or (sub_key == "culture" and any(k in lower for k in ["culture", "cultures", "tradition", "traditional", "heritage"]))
+                        or (sub_key == "places" and any(k in lower for k in ["place", "places", "destination", "country", "city", "landmark"]))
+                        or (sub_key == "adventure" and any(k in lower for k in ["explore", "exploring", "adventure", "journey", "backpack"]))
                     )
                     if matches_sub:
                         matched_concept = sub_key
@@ -260,16 +366,30 @@ class LLMSceneUnderstandingService:
             if not visual_desc:
                 visual_desc = f"Cinematic B-roll capturing {visual_hint.strip()}"
 
-        # 3. Fallback descriptive generation if no domain matched
+        # 3. High-precision semantic fallback generation if no domain matched
         if not visual_desc:
-            clean_words = [w for w in re.sub(r"[^\w\s]", " ", narration_text).split() if len(w) > 3][:6]
-            query_phrase = " ".join(clean_words) if clean_words else "modern professional environment"
-            visual_desc = f"Cinematic real-world footage depicting {query_phrase} in bright, modern atmosphere"
-            descriptive_queries = [
-                f"{query_phrase} professional",
-                f"{query_phrase} modern",
-                "modern innovative environment"
-            ]
+            stopwords = {
+                "allows", "allow", "experience", "different", "everyday", "becoming",
+                "important", "part", "this", "that", "these", "those", "have", "with",
+                "from", "into", "more", "most", "some", "such", "than", "will", "would",
+                "could", "should", "their", "there", "where", "which", "while", "about"
+            }
+            clean_words = [
+                w for w in re.sub(r"[^\w\s]", " ", narration_text).split()
+                if len(w) > 3 and w.lower() not in stopwords
+            ][:4]
+
+            if clean_words:
+                query_phrase = " ".join(clean_words[:3])
+                visual_desc = f"Cinematic real-world footage depicting {query_phrase} in clear natural setting"
+                descriptive_queries = [
+                    query_phrase,
+                    f"{clean_words[0]} {clean_words[1]}" if len(clean_words) >= 2 else clean_words[0],
+                    clean_words[0]
+                ]
+            else:
+                visual_desc = "Cinematic natural real-world documentary footage"
+                descriptive_queries = ["scenic world view", "inspiring landscape"]
 
         primary_query = descriptive_queries[0]
 

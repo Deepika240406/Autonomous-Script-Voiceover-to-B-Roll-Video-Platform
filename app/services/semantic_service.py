@@ -85,12 +85,25 @@ HEALTH_KEYWORDS = {
     "patients", "hospital", "clinic", "disease", "treatment", "biology", "pharmacy"
 }
 
+TRAVEL_KEYWORDS = {
+    "travel", "traveling", "travelling", "explore", "exploring", "exploration",
+    "places", "place", "culture", "cultures", "adventure", "journey", "destination",
+    "destinations", "tourism", "tourist", "tourists", "vacation", "trip", "monument",
+    "landmark", "landmarks", "wanderlust", "passport", "sightseeing"
+}
+
 INCOMPATIBLE_NATURE_TAGS = {
     "animal", "animals", "wild", "wildlife", "safari", "jaguar", "leopard", "cheetah",
     "lion", "tiger", "gorilla", "monkey", "chimpanzee", "bear", "wolf", "deer", "fox",
     "birds", "bird", "eagle", "duck", "waterfowl", "cormorants",
     "ocean", "waves", "beach", "seascape", "underwater", "fish", "coral", "reef",
     "volcano", "lava", "chimney", "fireplace", "stone bridge", "waterfall"
+}
+
+INCOMPATIBLE_TRAVEL_TAGS = {
+    "circuit", "sensor", "arduino", "robot", "robotics", "pcb", "electronics",
+    "microcontroller", "wire", "wires", "hardware", "server room", "hacker", "coding",
+    "soldering", "ultrasonic", "chip", "semiconductor", "cybersecurity"
 }
 
 STOPWORDS_EXTENDED = {
@@ -122,7 +135,10 @@ class SemanticService:
         tech_hits = sum(1 for kw in TECH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         biz_hits = sum(1 for kw in BUSINESS_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         health_hits = sum(1 for kw in HEALTH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
+        travel_hits = sum(1 for kw in TRAVEL_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
 
+        if travel_hits >= 2 or (travel_hits > 0 and travel_hits >= tech_hits and travel_hits >= biz_hits and travel_hits >= health_hits):
+            return "travel"
         if tech_hits >= 2 or (tech_hits > 0 and tech_hits >= biz_hits and tech_hits >= health_hits):
             return "tech"
         if biz_hits >= 2 or (biz_hits > 0 and biz_hits >= health_hits):
@@ -292,12 +308,17 @@ class SemanticService:
         """
         Anti-drift domain consistency check.
         Rejects wildlife/nature clips when the topic is tech, business, or health.
+        Rejects electronic/sensor/hardware clips when the topic is travel or tourism.
         """
+        lower = metadata_text.lower()
         if expected_domain in ("tech", "business", "health"):
-            lower = metadata_text.lower()
             for tag in INCOMPATIBLE_NATURE_TAGS:
                 if re.search(rf"\b{re.escape(tag)}\b", lower):
                     return True, f"Incompatible domain concept '{tag}' for {expected_domain} content"
+        elif expected_domain in ("travel", "travel_exploration"):
+            for tag in INCOMPATIBLE_TRAVEL_TAGS:
+                if re.search(rf"\b{re.escape(tag)}\b", lower):
+                    return True, f"Incompatible hardware/tech concept '{tag}' for travel content"
         return False, None
 
     def compute_relevance(self, scene_text: str, candidate_description: str, visual_hint: Optional[str] = None) -> float:
