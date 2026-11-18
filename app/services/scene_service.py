@@ -68,10 +68,11 @@ class SceneSegmentationService:
                 start_t = scenes[-1].end_time
 
             target_word_idx = min(total_available_words - 1, word_idx + scene_word_count - 1)
+            target_speech_end = round(word_timings[target_word_idx]["end"], 3) if target_word_idx >= 0 else None
             if idx == num_scenes - 1:
                 end_t = round(total_duration, 3)
             else:
-                end_t = round(word_timings[target_word_idx]["end"] if target_word_idx >= 0 else start_t + 3.0, 3)
+                end_t = round(target_speech_end if target_speech_end is not None else start_t + 3.0, 3)
 
             # Ensure monotonic progress
             if end_t <= start_t:
@@ -90,6 +91,7 @@ class SceneSegmentationService:
                 visual_hint=sc.visual_hint,
                 search_query=sc.visual_hint or sc.text,
                 semantic_context=sc.text,
+                speech_end_time=target_speech_end,
             ))
 
         # Final pass: Ensure 100% narration coverage from 0 to total_duration
@@ -208,6 +210,7 @@ class SceneSegmentationService:
             start = round(0.0 if idx == 0 else merged_segments[idx - 1]["end"], 3)
             end = round(total_duration if idx == num_merged - 1 else item["end"], 3)
             text = item["text"]
+            actual_speech_end = round(item["end"], 3)
 
             scenes.append(SceneData(
                 scene_index=idx,
@@ -218,7 +221,8 @@ class SceneSegmentationService:
                 visual_description=text,
                 visual_hint=None,
                 search_query=text,
-                semantic_context=text,
+                semantic_context=" ".join(s["text"] for s in merged_segments),
+                speech_end_time=actual_speech_end,
             ))
 
         if scenes:

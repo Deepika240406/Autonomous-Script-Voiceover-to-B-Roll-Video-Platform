@@ -1,7 +1,7 @@
 import os
 import httpx
 import uuid
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from app.config import settings
 from app.core.exceptions import (
     AudioValidationException,
@@ -103,6 +103,46 @@ class AudioService:
 
         self.validate_file_metadata(dest_path)
         return dest_path
+
+    def detect_speech_boundaries(
+        self,
+        file_path: str,
+        total_duration: float,
+        word_timings: Optional[List[Dict[str, Any]]] = None
+    ) -> Dict[str, float]:
+        """
+        Detects actual speech termination and trailing silence in audio.
+        Prevents captions and visual overlays from continuing past the end of spoken dialogue.
+        """
+        if word_timings and len(word_timings) > 0:
+            last_word_end = max((w.get("end", 0.0) for w in word_timings), default=0.0)
+            if last_word_end > 0.2:
+                speech_end = min(total_duration, round(last_word_end, 3))
+                return {
+                    "speech_end": speech_end,
+                    "trailing_silence": round(max(0.0, total_duration - speech_end), 3)
+                }
+
+        try:
+            vol_info = analyze_audio_silence_and_energy(file_path)
+            silence_periods = vol_info.get("silence_periods", [])
+            if silence_periods:
+                last_sil = silence_periods[-1]
+                if last_sil["end"] >= total_duration - 0.25 or last_sil["start"] > total_duration - 3.5:
+                    trailing_silence = max(0.0, total_duration - last_sil["start"])
+                    speech_end = max(0.5, round(last_sil["start"], 3))
+                    return {
+                        "speech_end": speech_end,
+                        "trailing_silence": round(trailing_silence, 3)
+                    }
+        except Exception as e:
+            logger.debug(f"Audio trailing silence detection note: {e}")
+
+        speech_end = round(max(0.5, total_duration - 0.3), 3)
+        return {
+            "speech_end": speech_end,
+            "trailing_silence": round(max(0.0, total_duration - speech_end), 3)
+        }
 
 
 audio_service = AudioService()

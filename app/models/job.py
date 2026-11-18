@@ -20,6 +20,10 @@ class ClipMetadata:
     selection_reason: str
     relevance_score: float
     search_query: str
+    semantic_score: float = 0.0
+    vlm_score: float = 0.0
+    human_rating: Optional[float] = None
+    extracted_frame_path: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
 
 
@@ -34,6 +38,7 @@ class SceneData:
     visual_hint: Optional[str]
     search_query: str
     semantic_context: str
+    speech_end_time: Optional[float] = None
     selected_clip: Optional[ClipMetadata] = None
     candidate_clips: List[Dict[str, Any]] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)

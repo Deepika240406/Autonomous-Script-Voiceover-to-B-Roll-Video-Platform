@@ -280,6 +280,9 @@ async def replace_scene_clip(
         is_ai_generated=chosen_cand.is_ai_generated,
         selection_reason=f"Manually replaced clip using query '{search_q}' from {chosen_cand.provider}",
         relevance_score=4.8,
+        semantic_score=4.8,
+        vlm_score=4.8,
+        human_rating=5.0,  # Manually selected/approved by human user
         search_query=search_q,
         warnings=list(scene.warnings) + [f"Scene {scene_index} clip replaced by user request."],
     )

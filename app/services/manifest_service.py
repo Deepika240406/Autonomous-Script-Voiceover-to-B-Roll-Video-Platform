@@ -12,6 +12,10 @@ class ManifestService:
         timeline_data = {
             "job_id": job.job_id,
             "total_scenes": len(job.scenes),
+            "captions_url": job.captions_file,
+            "timeline_url": job.timeline_file,
+            "manifest_url": job.manifest_file,
+            "output_videos": job.output_videos,
             "scenes": []
         }
 
@@ -37,6 +41,15 @@ class ManifestService:
                     "is_ai_generated": clip.is_ai_generated if clip else False,
                     "selection_reason": clip.selection_reason if clip else "No clip selected",
                     "relevance_score": clip.relevance_score if clip else 0.0,
+                    "model_scores": {
+                        "semantic_score": clip.semantic_score if clip else 0.0,
+                        "vlm_score": clip.vlm_score if clip else 0.0,
+                        "composite_relevance_score": clip.relevance_score if clip else 0.0,
+                    },
+                    "human_evaluation": {
+                        "human_rating": clip.human_rating if clip else None,
+                        "status": "reviewed" if (clip and clip.human_rating is not None) else "pending_human_review",
+                    },
                     "warnings": clip.warnings if clip else [],
                 },
                 "warnings": s.warnings,
@@ -80,6 +93,11 @@ class ManifestService:
                 "semantic_embeddings": {
                     "model": settings.SENTENCE_TRANSFORMER_MODEL,
                     "similarity_engine": "sentence-transformers / cosine"
+                },
+                "vision_language_model": {
+                    "model": "transformers-vision / visual-frame-evaluator",
+                    "evaluation_pipeline": "cross-modal frame-to-narration alignment",
+                    "status": "active"
                 },
                 "footage_sources": [
                     {"name": "pexels", "status": "active" if settings.PEXELS_API_KEY else "unconfigured"},

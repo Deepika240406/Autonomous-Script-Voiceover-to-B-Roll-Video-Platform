@@ -130,14 +130,24 @@ async def process_job(job_id: str) -> None:
         job.stage_timings["footage_retrieval"] = round(time.time() - t0, 3)
 
         # ---------------------------------------------------------
-        # STAGE 5: Captions Generation
+        # STAGE 5: Captions Generation & Audio Synchronization
         # ---------------------------------------------------------
         t0 = time.time()
         job.update_progress(75, "generating_captions")
 
+        # Priority 4: Detect audio speech boundaries and trailing silence
+        speech_sync = audio_service.detect_speech_boundaries(
+            file_path=raw_audio_path,
+            total_duration=total_duration,
+            word_timings=word_timings
+        )
+        trailing_silence = speech_sync.get("trailing_silence", 0.0)
+        if trailing_silence > 0.4:
+            logger.info(f"Trailing silence of {trailing_silence}s detected in audio. Synchronizing subtitle boundaries.")
+
         captions_cfg = job.request_params.get("captions", {"burn_in": True, "srt": True})
         srt_local_path = os.path.join(job_dir, "captions.srt")
-        caption_service.generate_srt(job.scenes, srt_local_path)
+        caption_service.generate_srt(job.scenes, srt_local_path, trailing_silence=trailing_silence)
         job.stage_timings["captions"] = round(time.time() - t0, 3)
 
         # ---------------------------------------------------------
@@ -185,14 +195,20 @@ async def process_job(job_id: str) -> None:
         timeline_local = os.path.join(job_dir, "timeline.json")
         manifest_local = os.path.join(job_dir, "manifest.json")
 
+        # Save captions.srt to storage first so its download URL is available for manifest and timeline
+        if captions_cfg.get("srt", True) and os.path.exists(srt_local_path):
+            job.captions_file = storage.save_file(f"jobs/{job_id}/captions.srt", srt_local_path)
+
+        # Pre-assign storage URLs so manifest and timeline artifacts reference fully populated download links
+        job.timeline_file = storage.get_file_url(f"jobs/{job_id}/timeline.json")
+        job.manifest_file = storage.get_file_url(f"jobs/{job_id}/manifest.json")
+
         manifest_service.generate_timeline(job, timeline_local)
         manifest_service.generate_manifest(job, manifest_local)
 
-        job.timeline_file = storage.save_file(f"jobs/{job_id}/timeline.json", timeline_local)
-        job.manifest_file = storage.save_file(f"jobs/{job_id}/manifest.json", manifest_local)
-
-        if captions_cfg.get("srt", True):
-            job.captions_file = storage.save_file(f"jobs/{job_id}/captions.srt", srt_local_path)
+        # Persist timeline.json and manifest.json with all URLs embedded
+        storage.save_file(f"jobs/{job_id}/timeline.json", timeline_local)
+        storage.save_file(f"jobs/{job_id}/manifest.json", manifest_local)
 
         job.stage_timings["artifacts"] = round(time.time() - t0, 3)
         job.stage_timings["total_pipeline_time"] = round(time.time() - start_total_time, 3)
