@@ -73,3 +73,13 @@ def test_relevance_scoring_range():
     )
     assert 1.0 <= score <= 5.0
     assert score >= 3.0  # High semantic relevance
+
+
+def test_multilingual_semantic_understanding():
+    # Hindi script
+    res_hi = semantic_service.analyze_hard_cases("प्रौद्योगिकी हमारे दैनिक जीवन को आसान बनाती है")
+    assert res_hi["domain"] == "tech" or any("technology" in q or "computer" in q or "digital" in q for q in res_hi["all_queries"])
+
+    # Tamil script
+    res_ta = semantic_service.analyze_hard_cases("பயணம் நமக்கு புதிய கலாச்சாரங்களை கற்றுக்கொடுக்கிறது")
+    assert res_ta["domain"] == "travel" or any("travel" in q or "culture" in q or "places" in q for q in res_ta["all_queries"])

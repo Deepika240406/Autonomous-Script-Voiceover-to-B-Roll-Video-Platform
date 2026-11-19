@@ -304,12 +304,99 @@ VISUAL_DOMAIN_CONCEPTS = {
 }
 
 
+HINDI_CONCEPT_MAP = {
+    "प्रौद्योगिकी": "technology innovation digital",
+    "तकनीक": "technology software digital",
+    "कंप्यूटर": "computer technology laptop screen",
+    "एआई": "artificial intelligence machine learning",
+    "आर्टिफिशियल": "artificial intelligence neural network",
+    "सुरक्षा": "cybersecurity digital lock protection",
+    "हैकर": "hacker cyber attack terminal",
+    "पासवर्ड": "password authentication two-factor",
+    "डेटा": "big data analytics cloud infrastructure",
+    "यात्रा": "world travel exploration destination",
+    "संस्कृति": "traditional cultural festival heritage",
+    "स्थान": "scenic world travel places",
+    "घूमना": "travel journey adventure backpacker",
+    "पर्यटन": "tourism travel destinations landmark",
+    "व्यापार": "business corporate meeting handshake",
+    "पैसा": "finance banking market investment",
+    "बिक्री": "sales financial growth revenue chart",
+    "विकास": "business analytics growth statistics",
+    "भरोसा": "business partnership handshake trust",
+    "विश्वास": "reliable foundation stones trust",
+    "धैर्य": "seed sprouting patience nature time lapse",
+    "सफलता": "climber mountain summit sunrise achievement",
+    "प्रकृति": "nature landscape mountains green forest",
+    "पहाड़": "majestic mountain peak scenic nature",
+    "स्वास्थ्य": "doctor healthcare wellness medical clinic",
+}
+
+TAMIL_CONCEPT_MAP = {
+    "தொழில்நுட்பம்": "technology digital innovation computer",
+    "கணினி": "computer technology digital screen",
+    "செயற்கை": "artificial intelligence technology machine learning",
+    "பாதுகாப்பு": "cybersecurity lock protection network",
+    "ஹேக்கர்": "hacker cyber attack digital code",
+    "கடவுச்சொல்": "password authentication secure login",
+    "தரவு": "big data cloud network servers",
+    "பயணம்": "travel journey adventure explore new places",
+    "கலாச்சாரம்": "traditional cultural festival heritage",
+    "இடம்": "scenic world travel destinations landmark",
+    "சுற்றுலா": "tourism travel explore world places",
+    "வணிகம்": "business corporate enterprise meeting",
+    "பணம்": "finance banking market money",
+    "விற்பனை": "sales financial growth revenue analytics",
+    "வளர்ச்சி": "business growth chart analytics statistics",
+    "நம்பிக்கை": "business handshake trust agreement",
+    "பொறுமை": "seed sprouting time lapse nature patience",
+    "வெற்றி": "mountain peak sunrise achievement success",
+    "இயற்கை": "nature landscape mountains green trees",
+    "சுகாதாரம்": "doctor healthcare clinic medical wellness",
+}
+
+
+def normalize_multilingual_text(text: str) -> str:
+    """
+    Detects if text contains Hindi or Tamil script, and translates it to an English
+    conceptual text for domain classification and stock footage search queries.
+    Uses ultra-fast local semantic dictionary first, falling back to neural translation.
+    """
+    if not text:
+        return ""
+
+    has_devanagari = bool(re.search(r"[\u0900-\u097F]", text))
+    has_tamil = bool(re.search(r"[\u0B80-\u0BFF]", text))
+
+    if not (has_devanagari or has_tamil):
+        return text
+
+    # 1. Instant local domain keyword mapping (sub-millisecond)
+    terms = HINDI_CONCEPT_MAP if has_devanagari else TAMIL_CONCEPT_MAP
+    matched = [v for k, v in terms.items() if k in text]
+    if matched:
+        return " ".join(matched)
+
+    # 2. Neural translation fallback for unmapped phrases
+    try:
+        from deep_translator import MyMemoryTranslator
+        src = "hi-IN" if has_devanagari else "ta-IN"
+        res = MyMemoryTranslator(source=src, target="en-GB").translate(text)
+        if res and res.strip() and not res.startswith("MYMEMORY WARNING"):
+            return res.strip()
+    except Exception as e:
+        logger.debug(f"Multilingual neural translation note: {e}")
+
+    return text
+
+
 class LLMSceneUnderstandingService:
     """
     Intelligent LLM scene comprehension engine:
     1. Converts voiceover narration sentences into rich, cinematic visual descriptions.
     2. Synthesizes descriptive, multi-word stock footage search queries.
     3. Identifies required visual anchors and prohibited off-domain elements.
+    4. Provides native multilingual script comprehension for Hindi, Tamil, and English.
     """
     def __init__(self):
         pass
@@ -321,8 +408,12 @@ class LLMSceneUnderstandingService:
         visual_hint: Optional[str] = None,
         scene_index: int = 0
     ) -> Dict[str, Any]:
-        lower = narration_text.lower()
-        context_lower = (overall_context or "").lower()
+        # Multilingual normalization: maps Hindi/Tamil to English conceptual representation
+        concept_narration = normalize_multilingual_text(narration_text)
+        concept_context = normalize_multilingual_text(overall_context or "")
+
+        lower = concept_narration.lower()
+        context_lower = concept_context.lower()
         combined_text = f"{lower} {context_lower}"
 
         matched_domain = "general"

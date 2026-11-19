@@ -10,6 +10,7 @@ This document provides a comprehensive, honest disclosure of every model, API, l
 | :--- | :--- | :--- | :--- | :--- |
 | **Whisper** | OpenAI / Hugging Face | `whisper-base` | **MIT Licence** | Commercial speech recognition and word timestamp extraction. |
 | **Sentence-BERT** | UKPLab / Hugging Face | `all-MiniLM-L6-v2` | **Apache 2.0 Licence** | Contextual sentence embedding and semantic cosine similarity. |
+| **Vision-Language Evaluator** | IncuBrix / Pillow / torchvision | v1.0.0 | **MIT / Apache 2.0** | Independent cross-modal frame-to-narration visual alignment scoring. |
 | **Contextual IR Embedder** | IncuBrix Internal | v1.0.0 | **Proprietary / MIT Compatible** | Sub-word n-gram containment & asymmetric concept relevance scorer. |
 | **Edge Neural TTS** | Microsoft Cognitive Speech (via edge-tts) | v7.3.1 | **MIT Licence (Tool) / Standard Speech Terms** | Synthetic voiceover generation with native word-boundary timestamps. Includes `en-IN`, `hi-IN`, `ta-IN`. |
 | **Pyttsx3 TTS** | Nican / pyttsx3 community | v2.99 | **MPL 2.0 / LGPL Compatible** | 100% offline fallback TTS engine. |
@@ -36,6 +37,7 @@ All video media utilized in the application default path adheres to commercial r
 | **FastAPI** | 0.109.0 | High-performance asynchronous API framework | MIT |
 | **Uvicorn** | 0.27.0 | Lightning-fast ASGI web server | BSD 3-Clause |
 | **FFmpeg & FFprobe** | 8.0.1 | Video scaling, cropping, normalization, subtitle burning, audio remuxing | LGPL v2.1+ / GPL v2+ |
+| **deep-translator** | 1.11.4 | Multilingual Hindi and Tamil conceptual translation for stock query synthesis | MIT |
 | **Pydantic** | 2.11+ | Data validation and schema enforcement | MIT |
 | **HTTPX** | 0.28.1 | Asynchronous HTTP client with SSRF protection & HMAC callbacks | BSD 3-Clause |
 | **Boto3** | 1.42.38 | Amazon S3 / MinIO object storage client | Apache 2.0 |

@@ -1,7 +1,7 @@
 import re
 from typing import Dict, Any, List, Tuple, Optional
 from app.providers.embeddings.sentence_transformer_provider import SentenceTransformerEmbeddingsProvider
-from app.services.llm_scene_service import llm_scene_service
+from app.services.llm_scene_service import llm_scene_service, normalize_multilingual_text
 from app.core.logging import logger
 
 
@@ -103,7 +103,8 @@ INCOMPATIBLE_NATURE_TAGS = {
 INCOMPATIBLE_TRAVEL_TAGS = {
     "circuit", "sensor", "arduino", "robot", "robotics", "pcb", "electronics",
     "microcontroller", "wire", "wires", "hardware", "server room", "hacker", "coding",
-    "soldering", "ultrasonic", "chip", "semiconductor", "cybersecurity"
+    "soldering", "ultrasonic", "chip", "semiconductor", "cybersecurity", "iot",
+    "automation", "engineering", "machine learning"
 }
 
 STOPWORDS_EXTENDED = {
@@ -126,12 +127,23 @@ STOPWORDS_EXTENDED = {
 }
 
 
+AVOID_CONCEPT_SYNONYMS = {
+    "alcohol": [r"\balcohol\b", r"\bbeer\b", r"\bwine\b", r"\bcocktail\b", r"\bliquor\b", r"\bwhiskey\b", r"\bvodka\b", r"\bchampagne\b", r"\bdrinking alcohol\b", r"\bbar pub\b"],
+    "people's faces": [r"\bface\b", r"\bfaces\b", r"\bportrait\b", r"\bselfie\b", r"\bclose up face\b", r"\bheadshot\b", r"\bmodel face\b"],
+    "faces": [r"\bface\b", r"\bfaces\b", r"\bportrait\b", r"\bselfie\b", r"\bclose up face\b"],
+    "face": [r"\bface\b", r"\bfaces\b", r"\bportrait\b", r"\bselfie\b", r"\bclose up face\b"],
+    "violence": [r"\bviolence\b", r"\bweapon\b", r"\bgun\b", r"\bfighting\b", r"\bblood\b", r"\bshooting\b", r"\bwar\b"],
+    "smoking": [r"\bsmoking\b", r"\bcigarette\b", r"\btobacco\b", r"\bcigar\b", r"\bvape\b"],
+}
+
+
 class SemanticService:
     def __init__(self):
         self.embeddings_provider = SentenceTransformerEmbeddingsProvider()
 
     def detect_domain(self, text: str) -> str:
-        lower = text.lower()
+        concept_text = normalize_multilingual_text(text)
+        lower = concept_text.lower()
         tech_hits = sum(1 for kw in TECH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         biz_hits = sum(1 for kw in BUSINESS_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         health_hits = sum(1 for kw in HEALTH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
@@ -156,8 +168,10 @@ class SemanticService:
         """
         Analyzes text for abstract concepts, statistics, ambiguous terms,
         celebrities, brands, and sensitive topics using LLM scene understanding.
+        Seamlessly normalizes multilingual Hindi and Tamil inputs to conceptual English.
         """
-        lower = text.lower()
+        concept_text = normalize_multilingual_text(text)
+        lower = concept_text.lower()
         warnings: List[str] = []
         is_sensitive = False
         neutralized_entities: List[str] = []
@@ -274,22 +288,17 @@ class SemanticService:
                 search_candidates.append("artificial intelligence technology")
                 search_candidates.append("data analytics dashboard")
 
-        # 9. Extract substantive visual nouns
-        clean_text_query = re.sub(r"[^\w\s]", " ", text)
-        substantive_words = [
-            w for w in clean_text_query.split()
-            if len(w) > 2 and w.lower() not in STOPWORDS_EXTENDED
-        ]
-
-        if len(substantive_words) >= 2:
-            search_candidates.append(f"{substantive_words[0]} {substantive_words[1]}")
-            if len(substantive_words) >= 4:
-                search_candidates.append(f"{substantive_words[2]} {substantive_words[3]}")
-        elif substantive_words:
-            search_candidates.append(substantive_words[0])
-
-        if domain == "tech" and not search_candidates:
+        # 9. Descriptive domain fallbacks (satisfies Priority 2: descriptive queries, not naive first 2 words)
+        if domain in ("travel", "travel_exploration") and not search_candidates:
+            search_candidates.append("world travel landmark culture")
+        elif domain == "tech" and not search_candidates:
             search_candidates.append("cybersecurity digital technology")
+        elif domain == "business" and not search_candidates:
+            search_candidates.append("corporate business modern office")
+        elif domain == "health" and not search_candidates:
+            search_candidates.append("medical healthcare doctor hospital")
+        elif not search_candidates:
+            search_candidates.append("cinematic landscape ambient documentary")
 
         primary_query = search_candidates[0] if search_candidates else text[:50]
 
@@ -344,17 +353,19 @@ class SemanticService:
     def violates_avoid_rules(self, metadata_text: str, avoid_list: List[str]) -> Tuple[bool, Optional[str]]:
         """
         Checks whether candidate footage metadata violates the user avoid list.
-        Uses precise word-boundary matching so words like 'interface' are not falsely flagged.
+        Uses precise word-boundary matching and expanded semantic synonyms
+        (e.g. alcohol -> wine/beer/cocktail; people's faces -> portrait/face/selfie/headshot).
         """
         lower = metadata_text.lower()
         for avoid_term in avoid_list:
             clean = avoid_term.strip().lower()
             if not clean:
                 continue
-            # e.g. "people's faces" -> check distinct word boundaries for face, faces, portrait, selfie
-            if clean in ("people's faces", "faces", "face"):
-                if re.search(r"\b(face|faces|portrait|selfie|close up face)\b", lower):
-                    return True, avoid_term
+            synonyms = AVOID_CONCEPT_SYNONYMS.get(clean)
+            if synonyms:
+                for pat in synonyms:
+                    if re.search(pat, lower):
+                        return True, avoid_term
             else:
                 escaped = re.escape(clean)
                 if re.search(rf"\b{escaped}\b", lower):
