@@ -34,6 +34,7 @@ class ManifestService:
                 "selected_footage": {
                     "clip_id": clip.clip_id if clip else None,
                     "provider": clip.provider if clip else None,
+                    "search_query": clip.search_query if clip else s.search_query,
                     "source_url": clip.source_url if clip else None,
                     "licence_name": clip.licence_name if clip else None,
                     "licence_url": clip.licence_url if clip else None,

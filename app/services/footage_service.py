@@ -149,14 +149,30 @@ class FootageService:
                         if valid_candidates:
                             # Rank candidates by full scene context semantic relevance score descending
                             valid_candidates.sort(key=lambda x: x[0], reverse=True)
-                            best_sem_score, best_cand, matched_query = valid_candidates[0]
 
-                            used_clip_ids.add(best_cand.clip_id)
+                            download_success = False
+                            for cand_score, cand_item, cand_query in valid_candidates:
+                                dest_filename = f"scene_{scene.scene_index}_{cand_item.clip_id}.mp4"
+                                dest_path = os.path.join(job_dir, "footage", dest_filename)
+                                try:
+                                    await provider.download_clip(cand_item, dest_path)
+                                    best_sem_score = cand_score
+                                    best_cand = cand_item
+                                    matched_query = cand_query
+                                    used_clip_ids.add(best_cand.clip_id)
+                                    download_success = True
+                                    break
+                                except Exception as dl_err:
+                                    logger.warning(f"Download failed for {cand_item.clip_id}: {dl_err}. Trying next candidate...")
+                                    if os.path.exists(dest_path):
+                                        try:
+                                            os.remove(dest_path)
+                                        except OSError:
+                                            pass
 
-                            # Download chosen clip
-                            dest_filename = f"scene_{scene.scene_index}_{best_cand.clip_id}.mp4"
-                            dest_path = os.path.join(job_dir, "footage", dest_filename)
-                            await provider.download_clip(best_cand, dest_path)
+                            if not download_success:
+                                logger.warning(f"All candidate downloads failed for provider {provider.provider_name}. Trying next provider...")
+                                continue
 
                             # Priority 2: Extract frame and run independent VLM evaluation
                             frames_dir = os.path.join(job_dir, "frames")

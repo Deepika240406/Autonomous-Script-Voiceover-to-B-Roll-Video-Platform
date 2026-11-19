@@ -391,9 +391,20 @@ VISUAL_DOMAIN_CONCEPTS = {
     "health_wellness": {
         "triggers": [
             "health", "healthy", "wellness", "fitness", "exercise", "nutrition",
-            "doctor", "hospital", "medicine", "medical", "treatment", "lifestyle"
+            "doctor", "hospital", "hospitals", "medicine", "medical", "treatment", "lifestyle",
+            "emergency", "ambulance", "paramedic", "paramedics", "rescue", "injured", "patient", "patients", "siren"
         ],
         "scenes": [
+            (
+                "emergency",
+                "Emergency medical responders and ambulance with flashing lights arriving to assist injured patients with urgent healthcare",
+                [
+                    "emergency ambulance flashing lights",
+                    "paramedics ambulance rescue response",
+                    "hospital emergency entrance ambulance",
+                    "emergency vehicle city street lights"
+                ]
+            ),
             (
                 "fitness",
                 "Active person jogging outdoors in scenic park during sunrise maintaining vibrant healthy lifestyle",
@@ -578,6 +589,7 @@ class LLMSceneUnderstandingService:
                     or (sub_key == "places" and any(k in lower for k in ["place", "places", "destination", "country", "city", "landmark"]))
                     or (sub_key == "adventure" and any(k in lower for k in ["explore", "exploring", "adventure", "journey", "backpack"]))
                     or (sub_key == "growth" and any(k in lower for k in ["growth", "sales", "revenue", "grow", "profit", "quarter"]))
+                    or (sub_key == "emergency" and any(k in lower for k in ["emergency", "ambulance", "paramedic", "paramedics", "injured", "hospital", "hospitals", "rescue", "accident"]))
                     or (sub_key == "partnership" and any(k in lower for k in ["partner", "partnership", "handshake", "agreement", "collaborate"]))
                     or (sub_key == "patience" and any(k in lower for k in ["patience", "patient", "sprout", "time", "gradual"]))
                     or (sub_key == "trust" and any(k in lower for k in ["trust", "foundation", "reliable", "integrity", "stone"]))

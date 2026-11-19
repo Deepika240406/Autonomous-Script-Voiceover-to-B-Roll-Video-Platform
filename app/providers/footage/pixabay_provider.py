@@ -49,7 +49,7 @@ class PixabayFootageProvider(BaseFootageProvider):
                             continue
 
                         videos = h.get("videos", {})
-                        stream_info = videos.get("large") or videos.get("medium") or videos.get("small")
+                        stream_info = videos.get("medium") or videos.get("large") or videos.get("small")
                         if not stream_info or not stream_info.get("url"):
                             continue
 
@@ -158,7 +158,7 @@ class PixabayFootageProvider(BaseFootageProvider):
             return dest_path
 
         # Standard video download
-        async with httpx.AsyncClient(timeout=45.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
             async with client.stream("GET", clip.download_url) as resp:
                 if resp.status_code != 200:
                     raise RuntimeError(f"Pixabay download failed: HTTP {resp.status_code}")

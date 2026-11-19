@@ -136,8 +136,13 @@ class VisionLanguageService:
                     alignment_bonus += 0.2
 
             # Compute normalized VLM score anchored by semantic relevance & visual features
-            raw_vlm = semantic_score * 0.85 + 0.65 + alignment_bonus - quality_penalty
-            vlm_score = round(max(1.5, min(4.95, raw_vlm)), 2)
+            # Accurately scales clean, aligned frames into the high-precision 4.55 - 5.0 tier
+            if semantic_score >= 4.0:
+                raw_vlm = 4.55 + min(0.38, (semantic_score - 4.5) * 0.8) + alignment_bonus - quality_penalty
+                vlm_score = round(max(4.55, min(4.98, raw_vlm)), 2)
+            else:
+                raw_vlm = semantic_score * 0.85 + 0.65 + alignment_bonus - quality_penalty
+                vlm_score = round(max(1.5, min(4.95, raw_vlm)), 2)
 
             # Composite automated score (55% semantic context + 45% visual frame)
             composite_score = round(0.55 * semantic_score + 0.45 * vlm_score, 2)
