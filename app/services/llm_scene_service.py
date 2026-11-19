@@ -5,13 +5,76 @@ from app.core.logging import logger
 
 
 VISUAL_DOMAIN_CONCEPTS = {
+    "education_learning": {
+        "triggers": [
+            "education", "educational", "learning", "learn", "student", "students",
+            "school", "schools", "university", "college", "teacher", "teachers",
+            "classroom", "study", "studying", "course", "courses", "lecture",
+            "campus", "academic", "knowledge", "scholar", "online learning",
+            "elearning", "degree", "graduation", "homework", "tutor", "tuition"
+        ],
+        "scenes": [
+            (
+                "online_learning",
+                "Focused student using laptop computer and digital tablets for online educational learning platform in a bright modern room",
+                [
+                    "student online learning laptop",
+                    "student laptop typing hands desk",
+                    "e learning digital education",
+                    "student studying laptop computer",
+                    "online education digital platform",
+                    "distance learning student desk"
+                ]
+            ),
+            (
+                "future_success",
+                "Inspiring graduation ceremony with enthusiastic university students celebrating future career success in golden sunlight",
+                [
+                    "university graduation students celebration",
+                    "graduation caps celebration sky",
+                    "students studying library success",
+                    "college education academic success",
+                    "university campus architecture building"
+                ]
+            ),
+            (
+                "classroom",
+                "Modern bright classroom with teacher guiding focused students with interactive educational tools",
+                [
+                    "modern classroom students teacher",
+                    "digital classroom tablet interactive",
+                    "classroom education learning",
+                    "school students studying classroom"
+                ]
+            ),
+            (
+                "students",
+                "Diverse group of university students collaborating and studying with books and laptops in university library",
+                [
+                    "university students campus library",
+                    "library books shelves studying",
+                    "college students studying group",
+                    "students education books library"
+                ]
+            ),
+            (
+                "general",
+                "Inspiring education scene showing dedicated students learning and acquiring knowledge for future success",
+                [
+                    "education learning school study",
+                    "student online learning laptop",
+                    "library books shelves study",
+                    "university campus architecture building"
+                ]
+            )
+        ]
+    },
     "cybersecurity": {
         "triggers": [
-            "cybersecurity", "security", "hacker", "hackers", "attack", "breach",
-            "password", "passwords", "authentication", "encryption", "malware",
-            "firewall", "data theft", "website", "websites", "mobile", "app",
-            "apps", "application", "applications", "online", "digital", "data",
-            "protect", "two-factor", "network", "networks"
+            "cybersecurity", "cyber security", "hacker", "hackers", "attack", "cyber attack",
+            "breach", "data breach", "data theft", "password", "passwords", "authentication",
+            "encryption", "malware", "firewall", "two-factor", "2fa", "unauthorized access",
+            "phishing", "ransomware", "cyber defense"
         ],
         "scenes": [
             (
@@ -62,6 +125,56 @@ VISUAL_DOMAIN_CONCEPTS = {
                     "cyber security shield protection",
                     "data encryption technology",
                     "secure corporate computer system"
+                ]
+            )
+        ]
+    },
+    "technology_software": {
+        "triggers": [
+            "technology", "software", "computer", "computers", "programming",
+            "developer", "coding", "smartphone", "cloud", "internet", "tech",
+            "devices", "device", "digital tools", "app", "apps", "mobile app",
+            "website", "websites", "platform", "platforms"
+        ],
+        "scenes": [
+            (
+                "mobile",
+                "Modern user interacting with mobile applications on smartphone displaying sleek digital interface",
+                [
+                    "mobile applications smartphone",
+                    "person using mobile app screen",
+                    "smartphone digital technology",
+                    "mobile screen user interface"
+                ]
+            ),
+            (
+                "cloud",
+                "High-tech server room with glowing blue fiber optic cables transmitting data across modern network infrastructure",
+                [
+                    "cloud computing data center",
+                    "server room digital infrastructure",
+                    "data stream modern network",
+                    "technology server room"
+                ]
+            ),
+            (
+                "software",
+                "Software engineer and developer coding on multi-monitor computer workstation in modern tech office",
+                [
+                    "software developer coding computer",
+                    "computer programmer modern office",
+                    "tech innovation digital workspace",
+                    "coding on computer screen"
+                ]
+            ),
+            (
+                "general",
+                "Modern digital technology innovation and interactive digital devices in sleek setting",
+                [
+                    "modern digital technology innovation",
+                    "computer technology workspace",
+                    "interactive digital technology",
+                    "smart technology digital interface"
                 ]
             )
         ]
@@ -327,6 +440,12 @@ HINDI_CONCEPT_MAP = {
     "विश्वास": "reliable foundation stones trust",
     "धैर्य": "seed sprouting patience nature time lapse",
     "सफलता": "climber mountain summit sunrise achievement",
+    "शिक्षा": "education learning student school university",
+    "सीखना": "learning students studying books",
+    "छात्र": "students university college campus",
+    "विद्यार्थी": "students studying library education",
+    "स्कूल": "school classroom students learning",
+    "कॉलेज": "college campus university students",
     "प्रकृति": "nature landscape mountains green forest",
     "पहाड़": "majestic mountain peak scenic nature",
     "स्वास्थ्य": "doctor healthcare wellness medical clinic",
@@ -351,6 +470,11 @@ TAMIL_CONCEPT_MAP = {
     "நம்பிக்கை": "business handshake trust agreement",
     "பொறுமை": "seed sprouting time lapse nature patience",
     "வெற்றி": "mountain peak sunrise achievement success",
+    "கல்வி": "education learning student university school",
+    "கற்றல்": "learning students studying laptop books",
+    "மாணவர்": "students university college campus learning",
+    "பள்ளி": "school classroom students learning",
+    "கல்லூரி": "college university campus students",
     "இயற்கை": "nature landscape mountains green trees",
     "சுகாதாரம்": "doctor healthcare clinic medical wellness",
 }
@@ -421,35 +545,55 @@ class LLMSceneUnderstandingService:
         visual_desc = None
         descriptive_queries: List[str] = []
 
-        # 1. Match domain and specific sub-concept
+        # 1. Score each domain: direct scene narration hits get weight 3; secondary context hits get weight 1
+        domain_scores: Dict[str, float] = {}
         for domain_key, domain_info in VISUAL_DOMAIN_CONCEPTS.items():
-            if any(trig in combined_text for trig in domain_info["triggers"]):
-                matched_domain = domain_key
-                for sub_key, sub_desc, sub_queries in domain_info["scenes"]:
-                    # Match sub-concept against narration text
-                    matches_sub = (
-                        sub_key in lower
-                        or (sub_key == "mobile" and any(k in lower for k in ["website", "websites", "mobile", "app", "application", "share", "personal"]))
-                        or (sub_key == "password" and any(k in lower for k in ["password", "passwords", "authentication", "two-factor", "protect"]))
-                        or (sub_key == "hacker" and any(k in lower for k in ["hacker", "hackers", "attack", "attacks", "steal", "breach"]))
-                        or (sub_key == "network" and any(k in lower for k in ["network", "networks", "data", "infrastructure"]))
-                        or (sub_key == "culture" and any(k in lower for k in ["culture", "cultures", "tradition", "traditional", "heritage"]))
-                        or (sub_key == "places" and any(k in lower for k in ["place", "places", "destination", "country", "city", "landmark"]))
-                        or (sub_key == "adventure" and any(k in lower for k in ["explore", "exploring", "adventure", "journey", "backpack"]))
-                    )
-                    if matches_sub:
-                        matched_concept = sub_key
-                        visual_desc = sub_desc
-                        descriptive_queries = list(sub_queries)
-                        break
+            score = 0.0
+            for trig in domain_info["triggers"]:
+                trig_escaped = re.escape(trig)
+                pattern = rf"(?:\b|_){trig_escaped}(?:\b|_)"
+                narration_matches = len(re.findall(pattern, lower))
+                if narration_matches > 0:
+                    score += narration_matches * 3.0
+                elif len(re.findall(pattern, context_lower)) > 0:
+                    score += 1.0
+            domain_scores[domain_key] = score
 
-                if not visual_desc:
-                    # Use domain general scene
-                    gen_scene = next((s for s in domain_info["scenes"] if s[0] == "general"), domain_info["scenes"][0])
-                    matched_concept = gen_scene[0]
-                    visual_desc = gen_scene[1]
-                    descriptive_queries = list(gen_scene[2])
-                break
+        best_domain = max(domain_scores, key=domain_scores.get) if domain_scores else None
+        if best_domain and domain_scores[best_domain] > 0.0:
+            matched_domain = best_domain
+            domain_info = VISUAL_DOMAIN_CONCEPTS[matched_domain]
+            for sub_key, sub_desc, sub_queries in domain_info["scenes"]:
+                matches_sub = (
+                    sub_key in lower
+                    or (sub_key == "online_learning" and any(k in lower for k in ["online", "platform", "platforms", "interactive", "accessible", "resources"]))
+                    or (sub_key == "future_success" and any(k in lower for k in ["future", "successful", "success", "role", "building"]))
+                    or (sub_key == "classroom" and any(k in lower for k in ["classroom", "teacher", "instruct", "school", "lecture"]))
+                    or (sub_key == "students" and any(k in lower for k in ["student", "students", "campus", "study", "books", "library"]))
+                    or (sub_key == "mobile" and any(k in lower for k in ["website", "websites", "mobile", "app", "application", "share", "personal"]))
+                    or (sub_key == "password" and any(k in lower for k in ["password", "passwords", "authentication", "two-factor", "protect"]))
+                    or (sub_key == "hacker" and any(k in lower for k in ["hacker", "hackers", "attack", "attacks", "steal", "breach"]))
+                    or (sub_key == "network" and any(k in lower for k in ["network", "networks", "data", "infrastructure"]))
+                    or (sub_key == "culture" and any(k in lower for k in ["culture", "cultures", "tradition", "traditional", "heritage"]))
+                    or (sub_key == "places" and any(k in lower for k in ["place", "places", "destination", "country", "city", "landmark"]))
+                    or (sub_key == "adventure" and any(k in lower for k in ["explore", "exploring", "adventure", "journey", "backpack"]))
+                    or (sub_key == "growth" and any(k in lower for k in ["growth", "sales", "revenue", "grow", "profit", "quarter"]))
+                    or (sub_key == "partnership" and any(k in lower for k in ["partner", "partnership", "handshake", "agreement", "collaborate"]))
+                    or (sub_key == "patience" and any(k in lower for k in ["patience", "patient", "sprout", "time", "gradual"]))
+                    or (sub_key == "trust" and any(k in lower for k in ["trust", "foundation", "reliable", "integrity", "stone"]))
+                )
+                if matches_sub:
+                    matched_concept = sub_key
+                    visual_desc = sub_desc
+                    descriptive_queries = list(sub_queries)
+                    break
+
+            if not visual_desc:
+                # Use domain general scene
+                gen_scene = next((s for s in domain_info["scenes"] if s[0] == "general"), domain_info["scenes"][0])
+                matched_concept = gen_scene[0]
+                visual_desc = gen_scene[1]
+                descriptive_queries = list(gen_scene[2])
 
         # 2. If visual hint was supplied, prioritize it
         if visual_hint and visual_hint.strip():

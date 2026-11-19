@@ -64,14 +64,19 @@ SENSITIVE_TRIGGERS = [
     "accident", "mourning", "disaster", "fatal", "sorrow"
 ]
 
+EDUCATION_KEYWORDS = {
+    "education", "educational", "learning", "learn", "student", "students", "school",
+    "schools", "university", "college", "teacher", "teachers", "classroom", "study",
+    "studying", "course", "courses", "lecture", "campus", "academic", "knowledge",
+    "scholar", "elearning", "degree", "graduation", "homework", "tutor", "tuition"
+}
+
 TECH_KEYWORDS = {
     "cybersecurity", "security", "hacker", "hackers", "password", "passwords",
-    "authentication", "network", "networks", "data", "attack", "attacks", "website",
-    "websites", "app", "apps", "application", "applications", "digital", "ai",
+    "authentication", "network", "networks", "data center", "attack", "attacks",
     "software", "computer", "computers", "code", "coding", "programming", "cloud",
-    "server", "servers", "infrastructure", "internet", "online", "system", "systems",
-    "cyber", "device", "devices", "mobile", "tech", "technology", "encryption",
-    "two-factor", "protect", "protection", "information", "robot", "robotics", "automation"
+    "server", "servers", "infrastructure", "internet", "cyber", "technology", "encryption",
+    "two-factor", "malware", "firewall", "robot", "robotics", "automation", "artificial intelligence", "ai"
 }
 
 BUSINESS_KEYWORDS = {
@@ -105,6 +110,11 @@ INCOMPATIBLE_TRAVEL_TAGS = {
     "microcontroller", "wire", "wires", "hardware", "server room", "hacker", "coding",
     "soldering", "ultrasonic", "chip", "semiconductor", "cybersecurity", "iot",
     "automation", "engineering", "machine learning"
+}
+
+INCOMPATIBLE_EDUCATION_TAGS = {
+    "hacker", "cyber attack", "malware", "skull", "hooded", "cheetah", "lion", "safari",
+    "gun", "weapon", "war", "blood", "alcohol", "beer", "wine", "nightclub", "casino"
 }
 
 STOPWORDS_EXTENDED = {
@@ -144,19 +154,22 @@ class SemanticService:
     def detect_domain(self, text: str) -> str:
         concept_text = normalize_multilingual_text(text)
         lower = concept_text.lower()
+        edu_hits = sum(1 for kw in EDUCATION_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
+        travel_hits = sum(1 for kw in TRAVEL_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         tech_hits = sum(1 for kw in TECH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         biz_hits = sum(1 for kw in BUSINESS_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
         health_hits = sum(1 for kw in HEALTH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
-        travel_hits = sum(1 for kw in TRAVEL_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", lower))
 
-        if travel_hits >= 2 or (travel_hits > 0 and travel_hits >= tech_hits and travel_hits >= biz_hits and travel_hits >= health_hits):
-            return "travel"
-        if tech_hits >= 2 or (tech_hits > 0 and tech_hits >= biz_hits and tech_hits >= health_hits):
-            return "tech"
-        if biz_hits >= 2 or (biz_hits > 0 and biz_hits >= health_hits):
-            return "business"
-        if health_hits >= 2 or health_hits > 0:
-            return "health"
+        scores = {
+            "education": edu_hits,
+            "travel": travel_hits,
+            "tech": tech_hits,
+            "business": biz_hits,
+            "health": health_hits,
+        }
+        best = max(scores, key=scores.get)
+        if scores[best] > 0:
+            return best
         return "general"
 
     def analyze_hard_cases(
@@ -271,7 +284,16 @@ class SemanticService:
             search_candidates.insert(0, visual_hint.strip())
 
         # 8. Domain-specific semantic concept queries
-        if domain == "tech":
+        if domain in ("education", "education_learning"):
+            if any(w in lower for w in ["online", "platform", "platforms", "interactive", "technology", "accessible", "resources"]):
+                search_candidates.append("student online learning laptop")
+                search_candidates.append("digital education student studying")
+            if any(w in lower for w in ["future", "success", "successful", "role", "building"]):
+                search_candidates.append("university graduation students celebration")
+                search_candidates.append("students studying library success")
+            search_candidates.append("education learning school study")
+            search_candidates.append("university students campus library")
+        elif domain == "tech":
             if any(w in lower for w in ["password", "passwords", "authentication", "lock"]):
                 search_candidates.append("password security authentication")
                 search_candidates.append("digital security lock")
@@ -289,7 +311,9 @@ class SemanticService:
                 search_candidates.append("data analytics dashboard")
 
         # 9. Descriptive domain fallbacks (satisfies Priority 2: descriptive queries, not naive first 2 words)
-        if domain in ("travel", "travel_exploration") and not search_candidates:
+        if domain in ("education", "education_learning") and not search_candidates:
+            search_candidates.append("education learning school study")
+        elif domain in ("travel", "travel_exploration") and not search_candidates:
             search_candidates.append("world travel landmark culture")
         elif domain == "tech" and not search_candidates:
             search_candidates.append("cybersecurity digital technology")
@@ -328,6 +352,10 @@ class SemanticService:
             for tag in INCOMPATIBLE_TRAVEL_TAGS:
                 if re.search(rf"\b{re.escape(tag)}\b", lower):
                     return True, f"Incompatible hardware/tech concept '{tag}' for travel content"
+        elif expected_domain in ("education", "education_learning"):
+            for tag in INCOMPATIBLE_EDUCATION_TAGS:
+                if re.search(rf"\b{re.escape(tag)}\b", lower):
+                    return True, f"Incompatible hacker/violent concept '{tag}' for education content"
         return False, None
 
     def compute_relevance(self, scene_text: str, candidate_description: str, visual_hint: Optional[str] = None) -> float:
