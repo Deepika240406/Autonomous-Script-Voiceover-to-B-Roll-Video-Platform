@@ -124,8 +124,8 @@ def get_web_dashboard():
 <body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
   <!-- Top Enterprise Navbar -->
-  <header class="border-b border-slate-800 glass-nav sticky top-0 z-50 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <header class="border-b border-slate-800 glass-nav sticky top-0 z-50 text-white w-full">
+    <div class="w-full px-6 sm:px-10 lg:px-16 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3.5">
         <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center font-black text-white text-base shadow-lg shadow-indigo-500/30">
           <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,42 +161,42 @@ def get_web_dashboard():
   </header>
 
   <!-- Hero Header Section -->
-  <section class="border-b border-slate-200/80 bg-white pt-10 pb-9">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-semibold">
+  <section class="border-b border-slate-200/80 bg-white py-12 sm:py-16 w-full">
+    <div class="w-full px-6 sm:px-10 lg:px-16 text-center space-y-6">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-semibold shadow-xs">
         <span>✨ Autonomous Video Intelligence Platform</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight max-w-4xl mx-auto leading-tight">
-        Turn Any Voiceover or Script into <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Professional B-Roll Video</span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight max-w-5xl mx-auto leading-tight">
+        Turn Any Voiceover or Script into <span class="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">Professional B-Roll Video</span>
       </h1>
-      <p class="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
+      <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
         High-precision LLM scene understanding, Sentence-BERT semantic footage alignment, and automated audio-synchronized rendering.
       </p>
 
-      <!-- Key Metrics Strip -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto pt-4 text-left">
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+      <!-- Key Metrics Strip (Spans Cleanly Across Full Screen) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto pt-4 text-left">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
-          <div class="text-lg font-bold text-indigo-600 font-mono">4.55 – 5.0 <span class="text-xs text-slate-400">/ 5.0</span></div>
+          <div class="text-xl font-bold text-indigo-600 font-mono mt-0.5">4.55 – 5.0 <span class="text-xs text-slate-400">/ 5.0</span></div>
         </div>
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
-          <div class="text-lg font-bold text-slate-800 font-mono">16:9 • 9:16 • 1:1</div>
+          <div class="text-xl font-bold text-slate-800 font-mono mt-0.5">16:9 • 9:16 • 1:1</div>
         </div>
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Turnaround Time</div>
-          <div class="text-lg font-bold text-emerald-600 font-mono">&lt; 30s <span class="text-xs text-slate-400">Fast Render</span></div>
+          <div class="text-xl font-bold text-emerald-600 font-mono mt-0.5">&lt; 30s <span class="text-xs text-slate-400">Fast Render</span></div>
         </div>
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
-          <div class="text-lg font-bold text-slate-800 font-mono">100% Verified</div>
+          <div class="text-xl font-bold text-slate-800 font-mono mt-0.5">100% Verified</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Studio Workspace Main Container (Full-Width Linear Step Flow) -->
-  <main id="studio-section" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full space-y-8">
+  <!-- Studio Workspace Main Container (Full Width across viewport) -->
+  <main id="studio-section" class="w-full px-6 sm:px-10 lg:px-16 py-10 flex-1 space-y-8">
     
     <!-- STEP 1: Video Creation Studio Card (Full Width) -->
     <div class="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
@@ -418,8 +418,8 @@ def get_web_dashboard():
   </main>
 
   <!-- Engine Architecture & Capabilities (Website Feature Grid) -->
-  <section id="pipeline-section" class="border-t border-slate-200 bg-white py-14">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+  <section id="pipeline-section" class="border-t border-slate-200 bg-white py-14 w-full">
+    <div class="w-full px-6 sm:px-10 lg:px-16 space-y-8">
       <div class="text-center space-y-2">
         <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Autonomous Engine Architecture</h2>
         <p class="text-sm text-slate-500 max-w-xl mx-auto">Engineered from first principles for precision, safety, and high-throughput video composition.</p>
@@ -454,8 +454,8 @@ def get_web_dashboard():
   </section>
 
   <!-- Website Enterprise Footer -->
-  <footer class="border-t border-slate-800 bg-slate-900 py-8 text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <footer class="border-t border-slate-800 bg-slate-900 py-8 text-xs text-slate-400 w-full">
+    <div class="w-full px-6 sm:px-10 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center space-x-2">
         <span class="font-bold text-white">IncuBrix Studio</span>
         <span>•</span>
