@@ -251,23 +251,70 @@ def get_web_dashboard():
         Transform voiceovers into broadcast-grade B-roll with contextual LLM scene decomposition, Sentence-BERT semantic ranking, and sub-second audio sync.
       </p>
 
-      <!-- Key Metrics Strip (With Dynamic Hover & Elevation Animations) -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 max-w-3xl mx-auto text-left">
-        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
-          <div class="text-lg font-bold text-indigo-600 font-mono mt-1">4.55 – 5.0 <span class="text-[11px] text-slate-400 font-normal">/ 5.0</span></div>
+      <!-- Key Metrics Strip (With Explanations & Generous Spacing) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-6 max-w-5xl mx-auto text-left">
+        <!-- Card 1: Semantic Precision -->
+        <div class="metric-card bg-slate-50/90 p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Semantic Precision</span>
+              <span class="text-sm">🎯</span>
+            </div>
+            <div class="text-2xl font-extrabold text-indigo-600 font-mono mt-1.5 whitespace-nowrap">
+              4.55 – 5.0 <span class="text-xs text-slate-400 font-normal">/ 5.0</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-3 pt-2.5 border-t border-slate-200/60 leading-relaxed">
+            Sentence-BERT contextual cosine ranking guarantees top-tier footage relevance with zero visual disconnect.
+          </p>
         </div>
-        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
-          <div class="text-lg font-bold text-slate-800 font-mono mt-1">16:9 • 9:16 • 1:1</div>
+
+        <!-- Card 2: Aspect Formats -->
+        <div class="metric-card bg-slate-50/90 p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Aspect Formats</span>
+              <span class="text-sm">📐</span>
+            </div>
+            <div class="text-xl font-extrabold text-slate-800 font-mono mt-1.5 whitespace-nowrap tracking-tight">
+              16:9 • 9:16 • 1:1
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-3 pt-2.5 border-t border-slate-200/60 leading-relaxed">
+            Multi-platform ready: YouTube widescreen (16:9), Instagram & TikTok reels (9:16), and LinkedIn feed (1:1).
+          </p>
         </div>
-        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Render Speed</div>
-          <div class="text-lg font-bold text-emerald-600 font-mono mt-1">&lt; 30s <span class="text-[11px] text-slate-400 font-normal">Accelerated</span></div>
+
+        <!-- Card 3: Render Speed -->
+        <div class="metric-card bg-slate-50/90 p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Render Speed</span>
+              <span class="text-sm">⚡</span>
+            </div>
+            <div class="text-2xl font-extrabold text-emerald-600 font-mono mt-1.5 whitespace-nowrap">
+              &lt; 30s <span class="text-xs text-slate-400 font-normal font-sans">Accelerated</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-3 pt-2.5 border-t border-slate-200/60 leading-relaxed">
+            Ultra-fast FFmpeg hardware composition with frame-accurate audio stitching and zero transcoding bottleneck.
+          </p>
         </div>
-        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
-          <div class="text-lg font-bold text-slate-800 font-mono mt-1">100% Safe</div>
+
+        <!-- Card 4: Commercial License -->
+        <div class="metric-card bg-slate-50/90 p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Commercial License</span>
+              <span class="text-sm">🛡️</span>
+            </div>
+            <div class="text-2xl font-extrabold text-slate-800 font-mono mt-1.5 whitespace-nowrap">
+              100% Safe
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-3 pt-2.5 border-t border-slate-200/60 leading-relaxed">
+            All sourced B-roll footage is commercially vetted and royalty-free for monetized channels and enterprise ads.
+          </p>
         </div>
       </div>
 
