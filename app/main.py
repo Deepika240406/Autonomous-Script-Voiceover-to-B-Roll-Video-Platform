@@ -161,42 +161,42 @@ def get_web_dashboard():
   </header>
 
   <!-- Hero Header Section -->
-  <section class="border-b border-slate-200/80 bg-white py-12 sm:py-16 w-full">
-    <div class="w-full px-6 sm:px-10 lg:px-16 text-center space-y-6">
-      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-semibold shadow-xs">
+  <section class="border-b border-slate-200/80 bg-white py-8 sm:py-10 w-full">
+    <div class="max-w-4xl mx-auto px-4 text-center space-y-4">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-semibold shadow-xs">
         <span>✨ Autonomous Video Intelligence Platform</span>
       </div>
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight max-w-5xl mx-auto leading-tight">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
         Turn Any Voiceover or Script into <span class="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">Professional B-Roll Video</span>
       </h1>
-      <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
+      <p class="text-sm sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
         High-precision LLM scene understanding, Sentence-BERT semantic footage alignment, and automated audio-synchronized rendering.
       </p>
 
-      <!-- Key Metrics Strip (Spans Cleanly Across Full Screen) -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto pt-4 text-left">
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
-          <div class="text-xl font-bold text-indigo-600 font-mono mt-0.5">4.55 – 5.0 <span class="text-xs text-slate-400">/ 5.0</span></div>
+      <!-- Key Metrics Strip (Clean centered row fitting perfectly on screen) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-left">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 shadow-xs">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
+          <div class="text-base font-bold text-indigo-600 font-mono mt-0.5">4.55 – 5.0 <span class="text-[10px] text-slate-400">/ 5.0</span></div>
         </div>
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
-          <div class="text-xl font-bold text-slate-800 font-mono mt-0.5">16:9 • 9:16 • 1:1</div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 shadow-xs">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
+          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">16:9 • 9:16 • 1:1</div>
         </div>
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Turnaround Time</div>
-          <div class="text-xl font-bold text-emerald-600 font-mono mt-0.5">&lt; 30s <span class="text-xs text-slate-400">Fast Render</span></div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 shadow-xs">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Turnaround Time</div>
+          <div class="text-base font-bold text-emerald-600 font-mono mt-0.5">&lt; 30s <span class="text-[10px] text-slate-400">Fast Render</span></div>
         </div>
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
-          <div class="text-xl font-bold text-slate-800 font-mono mt-0.5">100% Verified</div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 shadow-xs">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
+          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">100% Verified</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Studio Workspace Main Container (Full Width across viewport) -->
-  <main id="studio-section" class="w-full px-6 sm:px-10 lg:px-16 py-10 flex-1 space-y-8">
+  <!-- Studio Workspace Main Container (Comfortable Max Width with Balanced Margins) -->
+  <main id="studio-section" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
     
     <!-- STEP 1: Video Creation Studio Card (Full Width) -->
     <div class="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
