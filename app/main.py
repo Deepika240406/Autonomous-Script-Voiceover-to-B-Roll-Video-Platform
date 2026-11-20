@@ -100,135 +100,178 @@ def get_web_dashboard():
     previewing videos, inspecting timelines, and testing clip replacement.
     """
     html_content = """<!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IncuBrix Studio — AI Autonomous Video Production Platform</title>
+  <title>IncuBrix Studio — Autonomous Script to B-Roll Video Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-            }
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .bg-grid-pattern {
-      background-size: 32px 32px;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .stripe-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .saas-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
     }
-    .glow-effect {
-      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    .saas-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     }
-    .custom-scroll::-webkit-scrollbar { width: 6px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .input-field {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      transition: all 0.15s ease-in-out;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+    .saas-btn {
+      background: #0f172a;
+      color: #ffffff;
+      transition: all 0.15s ease;
+    }
+    .saas-btn:hover {
+      background: #1e293b;
+      transform: translateY(-0.5px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+    .step-active { border-color: #4f46e5; background: #eef2ff; color: #4338ca; font-weight: 600; }
+    .step-done { border-color: #10b981; background: #ecfdf5; color: #047857; font-weight: 600; }
+    .step-pending { border-color: #e2e8f0; background: #f8fafc; color: #94a3b8; }
   </style>
 </head>
-<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white bg-grid-pattern relative">
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- Ambient Glow Background -->
-  <div class="glow-effect absolute top-0 left-0 right-0 h-[500px] pointer-events-none -z-10"></div>
-
-  <!-- Header / Navigation -->
-  <header class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+  <!-- Clean Top Navigation (Linear / Stripe style) -->
+  <header class="border-b border-slate-200/80 stripe-nav sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
           </svg>
         </div>
-        <div>
-          <span class="text-base font-bold tracking-tight text-white">IncuBrix<span class="text-indigo-400">Studio</span></span>
-          <span class="ml-2 px-2 py-0.5 text-[10px] font-semibold font-mono rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.0 Production</span>
+        <div class="flex items-center space-x-2">
+          <span class="text-base font-bold tracking-tight text-slate-900">IncuBrix<span class="text-indigo-600 font-semibold">Studio</span></span>
+          <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">v1.0 Production</span>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Engine Online</span>
-        </div>
-        <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center space-x-1 border border-slate-800 rounded-lg px-3 py-1.5 hover:bg-slate-800/60">
+      <nav class="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-600">
+        <a href="#studio-section" class="text-indigo-600 font-semibold transition">Studio Workspace</a>
+        <a href="#pipeline-section" class="hover:text-slate-900 transition">Architecture</a>
+        <a href="/docs" target="_blank" class="hover:text-slate-900 transition flex items-center space-x-1">
           <span>API Docs</span>
-          <svg class="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>System Healthy</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Studio Workspace (Clean 2-Column Professional Layout) -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+  <!-- Clean SaaS Hero Banner -->
+  <section class="border-b border-slate-200/70 bg-white py-10 sm:py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-3">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
+        <span>✨ Powered by Sentence-BERT, Edge-TTS & Vision-Language Models</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        Autonomous Script & Voiceover to <span class="text-indigo-600">B-Roll Video</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+        Transform voiceovers into broadcast-grade B-roll with contextual LLM scene decomposition, Sentence-BERT semantic ranking, and sub-second audio sync.
+      </p>
+
+      <!-- Key Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 max-w-3xl mx-auto text-left">
+        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
+          <div class="text-base font-bold text-indigo-600 font-mono mt-0.5">4.55 – 5.0 <span class="text-[10px] text-slate-400 font-normal">/ 5.0</span></div>
+        </div>
+        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
+          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">16:9 • 9:16 • 1:1</div>
+        </div>
+        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Render Speed</div>
+          <div class="text-base font-bold text-emerald-600 font-mono mt-0.5">&lt; 30s <span class="text-[10px] text-slate-400 font-normal">Accelerated</span></div>
+        </div>
+        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+          <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
+          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">100% Safe</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Studio Workspace (Linear / Stripe style 2-Column Dashboard) -->
+  <main id="studio-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- LEFT COLUMN: Creator Studio Panel (5 Cols) -->
-      <div class="lg:col-span-5 bg-[#131927] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-6">
-        <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+      <!-- LEFT COLUMN: Creation Form Panel (5 cols) -->
+      <div class="lg:col-span-5 saas-card rounded-2xl p-6 sm:p-7 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
           <div>
-            <h2 class="text-base font-bold text-white tracking-tight">Video Generator</h2>
-            <p class="text-xs text-slate-400">Script to autonomous B-roll composition</p>
+            <h2 class="text-base font-bold text-slate-900 tracking-tight">Video Creation Studio</h2>
+            <p class="text-xs text-slate-500">Configure script, voice persona, and aspect ratio</p>
           </div>
-          <span id="char-count" class="text-xs text-slate-400 font-mono bg-slate-900 px-2.5 py-1 rounded border border-slate-800">0 chars</span>
+          <span id="char-count" class="text-xs text-slate-500 font-mono bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">0 chars</span>
         </div>
 
-        <div class="space-y-5">
-          <!-- Input Tabs -->
+        <div class="space-y-4">
+          <!-- Input Format Tabs -->
           <div>
-            <div class="grid grid-cols-3 gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-medium">
-              <button type="button" onclick="setMode('script')" id="btn-script" class="py-2 rounded-lg bg-indigo-600 text-white font-semibold transition">Script Text</button>
-              <button type="button" onclick="setMode('scenes')" id="btn-scenes" class="py-2 rounded-lg text-slate-400 hover:text-white transition">Scene List</button>
-              <button type="button" onclick="setMode('audio')" id="btn-audio" class="py-2 rounded-lg text-slate-400 hover:text-white transition">Audio URL</button>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Input Format</label>
+            <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold border border-slate-200/80">
+              <button type="button" onclick="setMode('script')" id="btn-script" class="py-2 rounded-lg bg-white text-indigo-700 shadow-xs border border-slate-200/70 transition">✍️ Script Text</button>
+              <button type="button" onclick="setMode('scenes')" id="btn-scenes" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">📋 Scene List</button>
+              <button type="button" onclick="setMode('audio')" id="btn-audio" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">🎙️ Audio URL</button>
             </div>
           </div>
 
           <!-- Script Textarea -->
           <div id="section-script">
-            <textarea id="input-script" rows="4" oninput="updateCharCount()" class="w-full bg-[#0b0f19] border border-slate-700/80 focus:border-indigo-500 rounded-xl p-3.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition leading-relaxed resize-none" placeholder="Enter narration script... e.g. Travel allows us to explore new places and experience different cultures.">Travel allows us to explore new places and experience different cultures.</textarea>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Narration Script</label>
+              <span class="text-[11px] text-slate-400">Auto-segments into B-roll scenes</span>
+            </div>
+            <textarea id="input-script" rows="4" oninput="updateCharCount()" class="w-full input-field rounded-xl p-3.5 text-sm text-slate-900 placeholder-slate-400 resize-none leading-relaxed" placeholder="Enter narration script... e.g. Travel allows us to explore new places and experience different cultures.">Travel allows us to explore new places and experience different cultures.</textarea>
           </div>
 
           <!-- Scene List Textarea -->
           <div id="section-scenes" class="hidden">
-            <textarea id="input-scenes" rows="4" class="w-full bg-[#0b0f19] border border-slate-700/80 focus:border-indigo-500 rounded-xl p-3.5 font-mono text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition resize-none">[
+            <textarea id="input-scenes" rows="4" class="w-full input-field rounded-xl p-3 font-mono text-xs text-slate-900 placeholder-slate-400 resize-none">[
   {"text": "Travel allows us to explore new places and experience different cultures.", "visual_hint": "scenic world travel destination landmark"},
   {"text": "Ancient monuments and cultural festivals reveal our shared history.", "visual_hint": "traditional cultural festival monuments"}
 ]</textarea>
           </div>
 
           <!-- Audio URL Input -->
-          <div id="section-audio" class="hidden space-y-1.5">
-            <input type="url" id="input-audio-url" class="w-full bg-[#0b0f19] border border-slate-700/80 focus:border-indigo-500 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition font-mono" placeholder="https://example.com/voiceover.mp3" />
+          <div id="section-audio" class="hidden space-y-1">
+            <input type="url" id="input-audio-url" class="w-full input-field rounded-xl p-2.5 text-xs text-slate-900 placeholder-slate-400 font-mono" placeholder="https://example.com/voiceover.mp3" />
             <div class="text-right">
-              <button type="button" onclick="loadDemoAudioUrl()" class="text-[11px] text-indigo-400 hover:text-indigo-300 transition">Use Sample Audio</button>
+              <button type="button" onclick="loadDemoAudioUrl()" class="text-xs text-indigo-600 hover:underline">Use Sample Demo Audio</button>
             </div>
           </div>
 
-          <!-- Voice Persona -->
+          <!-- Voice Persona Dropdown -->
           <div>
-            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Voice Persona</label>
-            <select id="input-voice" class="w-full bg-[#0b0f19] border border-slate-700/80 rounded-xl p-2.5 text-xs text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Voice Persona & Accent</label>
+            <select id="input-voice" class="w-full input-field rounded-xl p-2.5 text-xs text-slate-800 font-medium">
               <option value="en-IN-female">🇮🇳 en-IN-female (Neerja)</option>
               <option value="en-IN-male">🇮🇳 en-IN-male (Prabhat)</option>
               <option value="ta-IN-female">🇮🇳 ta-IN-female (Pallavi - Tamil)</option>
@@ -237,145 +280,149 @@ def get_web_dashboard():
             </select>
           </div>
 
-          <!-- Aspect Ratio Selector Cards -->
+          <!-- Aspect Ratio Toggle Cards -->
           <div>
-            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Aspect Ratio</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Render Aspect Ratio</label>
             <div class="grid grid-cols-3 gap-2">
-              <label id="lbl-ratio-16-9" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-300 font-medium text-xs cursor-pointer transition select-none">
+              <label id="lbl-ratio-16-9" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-indigo-600 bg-indigo-50/60 text-indigo-700 font-bold text-xs cursor-pointer transition select-none shadow-xs">
                 <input type="checkbox" id="ratio-16-9" checked onchange="toggleRatioUI('16-9')" class="hidden">
                 <span class="text-base">🖥️</span>
-                <span class="font-bold mt-1">16:9</span>
-                <span class="text-[10px] text-slate-400">Landscape</span>
+                <span class="mt-1">16:9</span>
+                <span class="text-[10px] font-normal text-indigo-500">Wide</span>
               </label>
-              <label id="lbl-ratio-9-16" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-800 bg-[#0b0f19] text-slate-400 font-medium text-xs cursor-pointer hover:border-slate-700 transition select-none">
+              <label id="lbl-ratio-9-16" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
                 <input type="checkbox" id="ratio-9-16" onchange="toggleRatioUI('9-16')" class="hidden">
                 <span class="text-base">📱</span>
-                <span class="font-bold mt-1">9:16</span>
-                <span class="text-[10px] text-slate-500">Vertical</span>
+                <span class="mt-1">9:16</span>
+                <span class="text-[10px] font-normal text-slate-400">Reels</span>
               </label>
-              <label id="lbl-ratio-1-1" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-800 bg-[#0b0f19] text-slate-400 font-medium text-xs cursor-pointer hover:border-slate-700 transition select-none">
+              <label id="lbl-ratio-1-1" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
                 <input type="checkbox" id="ratio-1-1" onchange="toggleRatioUI('1-1')" class="hidden">
                 <span class="text-base">⏹️</span>
-                <span class="font-bold mt-1">1:1</span>
-                <span class="text-[10px] text-slate-500">Square</span>
+                <span class="mt-1">1:1</span>
+                <span class="text-[10px] font-normal text-slate-400">Square</span>
               </label>
             </div>
           </div>
 
           <!-- Content Avoidance Rules -->
           <div>
-            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Content Avoidance Filters</label>
-            <input type="text" id="input-avoid" value="people's faces, alcohol" class="w-full bg-[#0b0f19] border border-slate-700/80 rounded-xl p-2.5 text-xs text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. people's faces, alcohol, weapons" />
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Content Avoidance Rules</label>
+              <span class="text-[11px] text-slate-400">Strict filter</span>
+            </div>
+            <input type="text" id="input-avoid" value="people's faces, alcohol" class="w-full input-field rounded-xl p-2.5 text-xs text-slate-800" placeholder="Comma separated: people's faces, alcohol, violence" />
           </div>
 
           <!-- Subtitle Options -->
-          <div class="flex items-center space-x-6 text-xs text-slate-300 pt-1 border-t border-slate-800/80">
-            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition"><input type="checkbox" id="burn-in" checked class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0"> <span>Burn-in Subtitles</span></label>
-            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition"><input type="checkbox" id="export-srt" checked class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0"> <span>Export captions.srt</span></label>
+          <div class="flex items-center space-x-6 pt-1 text-xs font-medium text-slate-700 border-t border-slate-100">
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="burn-in" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Burn-in Subtitles</span></label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="export-srt" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Generate captions.srt</span></label>
           </div>
 
-          <!-- Submit Button -->
-          <button id="btn-submit" onclick="submitJob()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-sm text-white shadow-lg shadow-indigo-600/30 transition-all active:scale-[0.99] flex items-center justify-center space-x-2 cursor-pointer">
+          <!-- Action Button -->
+          <button id="btn-submit" onclick="submitJob()" class="w-full py-3.5 saas-btn rounded-xl font-bold text-sm shadow-sm flex items-center justify-center space-x-2 cursor-pointer">
             <span id="btn-submit-icon">✨</span>
-            <span id="btn-submit-text">Generate Production Video</span>
+            <span id="btn-submit-text">Generate Production B-Roll Video</span>
           </button>
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: Production Execution & Review Studio (7 Cols) -->
+      <!-- RIGHT COLUMN: Production Execution & Review Studio (7 cols) -->
       <div class="lg:col-span-7 space-y-6">
         
-        <!-- Pipeline Execution Monitor Card -->
-        <div class="bg-[#131927] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <!-- Live Pipeline Execution Monitor Card -->
+        <div class="saas-card rounded-2xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <h2 class="text-base font-bold text-white tracking-tight">Execution Pipeline</h2>
-              <p class="text-xs text-slate-400 font-mono" id="job-id-display">Ready for generation job</p>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">Pipeline Execution Monitor</h2>
+              <p class="text-xs text-slate-500 font-mono" id="job-id-display">Ready for generation job</p>
             </div>
-            <div id="job-badge" class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-slate-900 text-slate-400 border border-slate-800">Idle</div>
+            <div id="job-badge" class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200">Idle</div>
           </div>
 
-          <!-- Stepper -->
+          <!-- 5-Stage Stepper -->
           <div class="grid grid-cols-5 gap-1.5 pt-1">
-            <div id="step-1" class="p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 text-slate-500 text-center transition">
+            <div id="step-1" class="p-2.5 rounded-xl border text-center transition step-pending">
               <div class="text-[10px] font-mono uppercase font-bold">1. Ingest</div>
             </div>
-            <div id="step-2" class="p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 text-slate-500 text-center transition">
+            <div id="step-2" class="p-2.5 rounded-xl border text-center transition step-pending">
               <div class="text-[10px] font-mono uppercase font-bold">2. Speech</div>
             </div>
-            <div id="step-3" class="p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 text-slate-500 text-center transition">
+            <div id="step-3" class="p-2.5 rounded-xl border text-center transition step-pending">
               <div class="text-[10px] font-mono uppercase font-bold">3. LLM Scene</div>
             </div>
-            <div id="step-4" class="p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 text-slate-500 text-center transition">
+            <div id="step-4" class="p-2.5 rounded-xl border text-center transition step-pending">
               <div class="text-[10px] font-mono uppercase font-bold">4. Match</div>
             </div>
-            <div id="step-5" class="p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 text-slate-500 text-center transition">
+            <div id="step-5" class="p-2.5 rounded-xl border text-center transition step-pending">
               <div class="text-[10px] font-mono uppercase font-bold">5. Render</div>
             </div>
           </div>
 
           <!-- Progress Bar -->
           <div>
-            <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
-              <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-violet-500 h-full w-0 transition-all duration-300"></div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
+              <div id="progress-bar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
             </div>
-            <div class="flex justify-between text-xs text-slate-400 font-mono mt-2">
-              <span id="job-stage" class="truncate max-w-xs">Awaiting input submission</span>
-              <span id="job-progress" class="font-bold text-white">0%</span>
+            <div class="flex justify-between text-xs text-slate-500 font-mono mt-2">
+              <span id="job-stage" class="truncate max-w-xs font-medium">Awaiting input submission</span>
+              <span id="job-progress" class="font-bold text-slate-900">0%</span>
             </div>
           </div>
         </div>
 
         <!-- Rendered Video Player Preview Card -->
-        <div id="player-card" class="hidden bg-[#131927] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
-          <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+        <div id="player-card" class="hidden saas-card rounded-2xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 pb-3">
             <div>
-              <h3 class="text-base font-bold text-white tracking-tight">Rendered Video Output</h3>
-              <p class="text-xs text-slate-400">Autonomous assembly with synchronized audio</p>
+              <h3 class="text-base font-bold text-slate-900 tracking-tight">Rendered Video Output</h3>
+              <p class="text-xs text-slate-500">Autonomous assembly with synchronized audio</p>
             </div>
-            <div id="aspect-switcher" class="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-medium">
-              <button onclick="switchAspect('16:9')" id="switch-16-9" class="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold transition">16:9</button>
-              <button onclick="switchAspect('9:16')" id="switch-9-16" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white transition">9:16</button>
-              <button onclick="switchAspect('1:1')" id="switch-1-1" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white transition">1:1</button>
+            <!-- Multi-Aspect Ratio Switcher -->
+            <div id="aspect-switcher" class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
+              <button onclick="switchAspect('16:9')" id="switch-16-9" class="px-3 py-1 rounded-lg bg-white text-indigo-700 shadow-xs border border-slate-200/70 transition">16:9</button>
+              <button onclick="switchAspect('9:16')" id="switch-9-16" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">9:16</button>
+              <button onclick="switchAspect('1:1')" id="switch-1-1" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">1:1</button>
             </div>
           </div>
 
-          <div id="player-container" class="bg-black rounded-xl overflow-hidden border border-slate-800/90 aspect-video relative flex items-center justify-center mx-auto shadow-2xl">
+          <div id="player-container" class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 aspect-video relative flex items-center justify-center mx-auto shadow-md">
             <video id="video-player" controls class="max-h-full max-w-full rounded-lg"></video>
           </div>
 
-          <!-- Download Pills -->
-          <div id="results-links" class="pt-3 border-t border-slate-800/80">
-            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Production Output Files</div>
-            <div id="links-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs"></div>
+          <!-- Download Assets Shelf -->
+          <div id="results-links" class="pt-3 border-t border-slate-100">
+            <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Production Output Files</div>
+            <div id="links-container" class="grid grid-cols-2 md:grid-cols-3 gap-2.5 text-xs"></div>
           </div>
         </div>
 
-        <!-- Scene Breakdown Timeline Card -->
-        <div id="scenes-breakdown-card" class="hidden bg-[#131927] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <!-- Visual Scene Breakdown Cards -->
+        <div id="scenes-breakdown-card" class="hidden saas-card rounded-2xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <h3 class="text-base font-bold text-white tracking-tight">Visual Scene Timeline</h3>
-              <p class="text-xs text-slate-400">Sentence-BERT Context Ranking & Frame Verification</p>
+              <h3 class="text-base font-bold text-slate-900 tracking-tight">Visual Scene Timeline</h3>
+              <p class="text-xs text-slate-500">Sentence-BERT Context Ranking & Vision-Language Validation</p>
             </div>
-            <span id="scene-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">0 Scenes</span>
+            <span id="scene-count-badge" class="px-3 py-1 rounded-full text-xs font-mono bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">0 Scenes</span>
           </div>
-          <div id="scene-cards-container" class="space-y-3 max-h-[30rem] overflow-y-auto pr-1 custom-scroll"></div>
+          <div id="scene-cards-container" class="space-y-3.5 max-h-[32rem] overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- Code Artifacts Inspector -->
-        <div id="artifacts-box" class="hidden bg-[#131927] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-3">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <!-- Raw Artifacts Box -->
+        <div id="artifacts-box" class="hidden saas-card rounded-2xl p-6 sm:p-7 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
             <div class="flex space-x-4 text-xs font-medium">
-              <button onclick="showTab('timeline')" id="tab-timeline" class="pb-1 font-bold text-indigo-400 border-b-2 border-indigo-500 transition">timeline.json</button>
-              <button onclick="showTab('manifest')" id="tab-manifest" class="pb-1 text-slate-400 hover:text-white transition">manifest.json</button>
-              <button onclick="showTab('captions')" id="tab-captions" class="pb-1 text-slate-400 hover:text-white transition">captions.srt</button>
+              <button onclick="showTab('timeline')" id="tab-timeline" class="pb-1 font-bold text-indigo-700 border-b-2 border-indigo-600 transition">timeline.json</button>
+              <button onclick="showTab('manifest')" id="tab-manifest" class="pb-1 text-slate-500 hover:text-slate-800 transition">manifest.json</button>
+              <button onclick="showTab('captions')" id="tab-captions" class="pb-1 text-slate-500 hover:text-slate-800 transition">captions.srt</button>
             </div>
-            <button onclick="copyCurrentTab()" class="text-xs text-slate-400 hover:text-white transition font-mono flex items-center space-x-1 px-2.5 py-1 rounded-lg border border-slate-800 hover:bg-slate-800">
+            <button onclick="copyCurrentTab()" class="text-xs text-slate-600 hover:text-slate-900 transition font-mono flex items-center space-x-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50">
               <span>📋 Copy</span>
             </button>
           </div>
-          <pre id="tab-content" class="bg-[#0b0f19] p-4 rounded-xl font-mono text-xs text-slate-300 max-h-56 overflow-y-auto border border-slate-800 leading-relaxed custom-scroll"></pre>
+          <pre id="tab-content" class="bg-slate-900 p-4 rounded-xl font-mono text-xs text-slate-200 max-h-56 overflow-y-auto border border-slate-800 leading-relaxed"></pre>
         </div>
 
       </div>
@@ -383,16 +430,16 @@ def get_web_dashboard():
     </div>
   </main>
 
-  <!-- Professional Footer -->
-  <footer class="border-t border-slate-800/80 bg-[#0b0f19] py-6 text-xs text-slate-500 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <!-- Clean Enterprise Footer -->
+  <footer class="border-t border-slate-200/80 bg-white py-6 text-xs text-slate-500 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div>
-        <span class="font-semibold text-slate-300">IncuBrix Studio</span> • Autonomous Script to B-Roll Video Platform
+        <span class="font-bold text-slate-800">IncuBrix Studio</span> • Autonomous Script to B-Roll Video Platform
       </div>
       <div class="flex items-center space-x-4 font-mono text-[11px]">
         <span>Sentence-BERT 4.55 - 5.0</span>
         <span>•</span>
-        <span>Edge-TTS Multi-Language</span>
+        <span>Edge-TTS Voiceover</span>
         <span>•</span>
         <span>FFmpeg Accelerated</span>
       </div>
