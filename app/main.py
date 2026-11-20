@@ -152,7 +152,7 @@ def get_web_dashboard():
 
   <!-- Clean Top Navigation (Linear / Stripe style) -->
   <header class="border-b border-slate-200/80 stripe-nav sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="w-full px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,9 +218,9 @@ def get_web_dashboard():
     </div>
   </section>
 
-  <!-- Studio Workspace (Linear / Stripe style 2-Column Dashboard) -->
-  <main id="studio-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <!-- Studio Workspace (Full Screen SaaS Dashboard) -->
+  <main id="studio-section" class="w-full px-4 sm:px-6 lg:px-10 py-8 flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
       
       <!-- LEFT COLUMN: Creation Form Panel (5 cols) -->
       <div class="lg:col-span-5 saas-card rounded-2xl p-6 sm:p-7 space-y-5">
@@ -321,7 +321,7 @@ def get_web_dashboard():
           </div>
 
           <!-- Action Button -->
-          <button id="btn-submit" onclick="submitJob()" class="w-full py-3.5 saas-btn rounded-xl font-bold text-sm shadow-sm flex items-center justify-center space-x-2 cursor-pointer">
+          <button id="btn-submit" onclick="submitJob()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 cursor-pointer">
             <span id="btn-submit-icon">✨</span>
             <span id="btn-submit-text">Generate Production B-Roll Video</span>
           </button>
@@ -430,9 +430,67 @@ def get_web_dashboard():
     </div>
   </main>
 
+  <!-- Autonomous Engine Architecture Section (Full Width) -->
+  <section id="pipeline-section" class="w-full border-t border-slate-200/80 bg-white py-14 px-4 sm:px-6 lg:px-10">
+    <div class="w-full max-w-7xl mx-auto text-center space-y-3">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        Autonomous Engine Architecture
+      </h2>
+      <p class="text-sm text-slate-600 max-w-2xl mx-auto">
+        Engineered from first principles for precision, safety, and high-throughput video composition.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 text-left">
+        <!-- Card 1 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+            🧠
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">LLM Scene Decomposition</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Converts voiceover narration into visual descriptions, extracting metaphors, statistics, and disambiguating multi-meaning terms.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+            🎯
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">Sentence-BERT Ranking</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Retrieves 20+ candidate clips per query and ranks them across the full scene context to achieve 4.55 – 5.0 semantic alignment.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+            🤖
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">VLM Frame Alignment</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Extracts representative video frames and verifies brightness, contrast, and visual features against the voiceover context.
+          </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+            🛡️
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">Avoidance & Safety Filter</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Strict enforcement prevents faces, celebrity likeness, logos, or sensitive graphic content with non-sensational contextual imagery.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Clean Enterprise Footer -->
   <footer class="border-t border-slate-200/80 bg-white py-6 text-xs text-slate-500 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="w-full px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div>
         <span class="font-bold text-slate-800">IncuBrix Studio</span> • Autonomous Script to B-Roll Video Platform
       </div>
