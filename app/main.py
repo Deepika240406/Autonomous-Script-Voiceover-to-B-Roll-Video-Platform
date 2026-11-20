@@ -260,9 +260,9 @@ def get_web_dashboard():
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Render Aspect Ratios</label>
               <div class="flex items-center space-x-3 pt-2 text-xs font-medium">
-                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-16-9" checked class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>16:9</span></label>
-                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-9-16" checked class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>9:16</span></label>
-                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-1-1" checked class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>1:1</span></label>
+                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-16-9" checked class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>16:9 (Landscape)</span></label>
+                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-9-16" class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>9:16 (Vertical)</span></label>
+                <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-1-1" class="rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>1:1 (Square)</span></label>
               </div>
             </div>
           </div>

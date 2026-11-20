@@ -11,21 +11,19 @@ from app.core.logging import logger
 
 ASPECT_RATIO_CONFIGS = {
     "16:9": {
-        "width": 1920,
-        "height": 1080,
-        "filter": "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
+        "width": 1280,
+        "height": 720,
+        "filter": "scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,format=yuv420p"
     },
     "9:16": {
-        "width": 1080,
-        "height": 1920,
-        # Ultra-fast high-quality scaling and cropping for vertical mobile format
-        "filter": "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
+        "width": 720,
+        "height": 1280,
+        "filter": "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,format=yuv420p"
     },
     "1:1": {
-        "width": 1080,
-        "height": 1080,
-        # Ultra-fast high-quality scaling and cropping for square format
-        "filter": "scale=1080:1080:force_original_aspect_ratio=increase,crop=1080:1080,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
+        "width": 720,
+        "height": 720,
+        "filter": "scale=720:720:force_original_aspect_ratio=increase,crop=720:720,format=yuv420p"
     }
 }
 
