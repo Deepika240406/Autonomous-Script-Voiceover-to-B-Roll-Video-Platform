@@ -1,4 +1,14 @@
 import os
+
+# Limit CPU / OpenMP / MKL / BLAS worker threads immediately on import to keep
+# memory usage well within 512MB RAM on free-tier containers (e.g. Render, Railway).
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 import uuid
 import asyncio
 from contextlib import asynccontextmanager
@@ -20,7 +30,10 @@ worker_tasks = []
 async def lifespan(app: FastAPI):
     # Startup: Initialize background worker tasks
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
-    for i in range(settings.MAX_CONCURRENT_JOBS):
+    # Render free tier has 512MB RAM; enforce 1 worker loop on containerized hosts
+    is_render = bool(os.environ.get("RENDER"))
+    concurrency = 1 if is_render else min(2, settings.MAX_CONCURRENT_JOBS)
+    for i in range(concurrency):
         task = asyncio.create_task(worker_loop())
         worker_tasks.append(task)
     yield
@@ -80,7 +93,7 @@ app.add_api_route(
 )
 
 
-@app.get("/", response_class=HTMLResponse, tags=["Web UI"])
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse, tags=["Web UI"])
 def get_web_dashboard():
     """
     Intuitive, responsive web interface for evaluating the engine, submitting jobs,
@@ -567,11 +580,23 @@ def get_web_dashboard():
       document.getElementById('btn-submit-text').innerText = 'Generate Production B-Roll Video';
     }
 
+    let pollFailCount = 0;
     function startPolling(jobId) {
       if (pollInterval) clearInterval(pollInterval);
+      pollFailCount = 0;
       pollInterval = setInterval(async () => {
         try {
           const res = await fetch(`/api/v1/jobs/${jobId}`);
+          if (!res.ok) {
+            pollFailCount++;
+            if (pollFailCount > 20) {
+              clearInterval(pollInterval);
+              resetSubmitBtn();
+              alert('Server unavailable (HTTP ' + res.status + '). Please refresh or check Render logs.');
+            }
+            return;
+          }
+          pollFailCount = 0;
           const job = await res.json();
 
           document.getElementById('progress-bar').style.width = job.progress + '%';

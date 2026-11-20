@@ -53,7 +53,7 @@ class SentenceTransformerEmbeddingsProvider(BaseEmbeddingsProvider):
     def compute_batch_similarities(self, target_text: str, candidate_texts: List[str]) -> List[float]:
         """
         High-speed vectorized batch similarity computation.
-        Evaluates 20+ candidates in a single tensor operation.
+        Evaluates candidates with small batches to maintain low memory profile (<512MB RAM).
         """
         if not candidate_texts:
             return []
@@ -62,7 +62,7 @@ class SentenceTransformerEmbeddingsProvider(BaseEmbeddingsProvider):
             try:
                 import numpy as np
                 all_texts = [target_text] + candidate_texts
-                embeddings = model.encode(all_texts, convert_to_numpy=True, batch_size=32)
+                embeddings = model.encode(all_texts, convert_to_numpy=True, batch_size=4)
                 target_emb = embeddings[0]
                 target_norm = float(np.linalg.norm(target_emb)) or 1.0
 

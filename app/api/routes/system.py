@@ -9,10 +9,11 @@ from app.storage.s3_storage import get_storage
 router = APIRouter()
 
 
-@router.get("/health", tags=["System"])
+@router.api_route("/health", methods=["GET", "HEAD"], tags=["System"])
 def health_check():
     """
     Standard health check endpoint returning 200 OK when service is running.
+    Supports both GET and HEAD requests (Render and cloud health probes).
     """
     return {
         "status": "healthy",
@@ -22,7 +23,7 @@ def health_check():
     }
 
 
-@router.get("/ready", tags=["System"])
+@router.api_route("/ready", methods=["GET", "HEAD"], tags=["System"])
 def readiness_check():
     """
     Readiness check verifying FFmpeg binary and storage accessibility.

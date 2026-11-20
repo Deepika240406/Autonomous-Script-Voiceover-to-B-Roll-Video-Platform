@@ -14,6 +14,14 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Enforce thread and memory limits for 512MB RAM cloud environments (Render, Railway, Fly.io)
+ENV OMP_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    NUMEXPR_NUM_THREADS=1 \
+    TOKENIZERS_PARALLELISM=false \
+    PYTHONUNBUFFERED=1
+
 # Copy source code and assets
 COPY app/ ./app/
 COPY assets/ ./assets/
