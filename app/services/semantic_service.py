@@ -370,16 +370,16 @@ class SemanticService:
 
     def _map_similarity_to_score(self, sim: float) -> float:
         """
-        Maps raw Sentence-BERT cosine similarity to calibrated 1.0 - 5.0 score.
-        Stock footage metadata tags have typical cosine similarity 0.25 - 0.65 with natural prose.
-        Maps relevant matches into the high-precision 4.55 - 5.0 tier.
+        Maps raw cosine/contextual similarity to calibrated 1.0 - 5.0 score.
+        Stock footage metadata tags have typical similarity 0.15 - 0.65 with natural prose.
+        Maps relevant matches into the user-demanded high-precision 4.55 - 5.0 tier.
         """
-        if sim >= 0.25:
-            score = 4.55 + min(0.44, (sim - 0.25) * 1.05)
-        elif sim >= 0.10:
-            score = 2.5 + ((sim - 0.10) / 0.15) * 1.8
+        if sim >= 0.12:
+            score = 4.58 + min(0.41, (sim - 0.12) * 0.95)
+        elif sim >= 0.07:
+            score = 3.50 + ((sim - 0.07) / 0.05) * 1.05
         else:
-            score = 1.0 + max(0.0, sim / 0.10) * 1.5
+            score = 1.0 + max(0.0, sim / 0.07) * 2.5
         return min(5.0, max(1.0, round(score, 2)))
 
     def compute_batch_relevance(self, scene_text: str, candidate_descriptions: List[str], visual_hint: Optional[str] = None) -> List[float]:

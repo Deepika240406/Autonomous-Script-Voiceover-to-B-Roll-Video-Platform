@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     DEFAULT_VOICE: str = "en-IN-female"
     SENTENCE_TRANSFORMER_MODEL: str = "all-MiniLM-L6-v2"
     EMBEDDINGS_DEVICE: str = "cpu"
+    USE_LIGHTWEIGHT_EMBEDDINGS: bool = False  # Set to True on memory-constrained (512MB RAM) servers
 
     # External Stock Footage Providers (Optional keys; fallback to mock/local if absent)
     PEXELS_API_KEY: Optional[str] = None

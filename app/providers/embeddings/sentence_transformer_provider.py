@@ -11,6 +11,11 @@ _model = None
 def get_st_model():
     global _model
     if _model is None:
+        # Check if running in a memory-constrained cloud environment (e.g. Render 512MB RAM)
+        if os.environ.get("RENDER") or settings.USE_LIGHTWEIGHT_EMBEDDINGS:
+            logger.info("Memory-constrained cloud container detected (Render). Using ultra-lightweight ContextualSimilarityProvider (<50MB RAM).")
+            _model = False
+            return _model
         try:
             from sentence_transformers import SentenceTransformer
             logger.info(f"Initializing SentenceTransformer '{settings.SENTENCE_TRANSFORMER_MODEL}' on '{settings.EMBEDDINGS_DEVICE}'...")
