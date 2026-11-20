@@ -39,25 +39,33 @@ class EdgeTTSProvider(BaseTTSProvider):
         has_latin = bool(re.search(r"[a-zA-Z]", text))
         if has_latin:
             target_lang = None
-            if voice_id.startswith("ta-IN-") or voice.startswith("ta-"):
-                target_lang = "ta-IN"
-            elif voice_id.startswith("hi-IN-") or voice.startswith("hi-"):
-                target_lang = "hi-IN"
+            if voice_id.startswith("ta-IN-") or voice.startswith("ta-") or "ta-IN" in voice_id:
+                target_lang = "ta"
+            elif voice_id.startswith("hi-IN-") or voice.startswith("hi-") or "hi-IN" in voice_id:
+                target_lang = "hi"
 
             if target_lang:
                 try:
-                    from deep_translator import MyMemoryTranslator
-                    # Translate sentence by sentence to ensure high fidelity
+                    from deep_translator import GoogleTranslator
                     sentences = [s.strip() for s in re.split(r"(?<=[.!?\n])\s+", text) if s.strip()]
                     translated_parts = []
-                    translator = MyMemoryTranslator(source="en-GB", target=target_lang)
+                    translator = GoogleTranslator(source="auto", target=target_lang)
                     for s in sentences:
                         t = translator.translate(s)
                         translated_parts.append(t if t else s)
                     spoken_text = " ".join(translated_parts)
-                    logger.info(f"Translated English narration to {target_lang} for voice '{voice_id}': '{spoken_text[:80]}...'")
+                    logger.info(f"Translated narration to '{target_lang}' for voice '{voice_id}': '{spoken_text}'")
                 except Exception as e:
-                    logger.warning(f"Translation to {target_lang} encountered: {e}. Proceeding with original script.")
+                    logger.warning(f"GoogleTranslator to {target_lang} failed: {e}. Trying MyMemoryTranslator...")
+                    try:
+                        from deep_translator import MyMemoryTranslator
+                        alt_target = "ta-IN" if target_lang == "ta" else "hi-IN"
+                        translator2 = MyMemoryTranslator(source="en-GB", target=alt_target)
+                        translated_parts = [translator2.translate(s) or s for s in sentences]
+                        spoken_text = " ".join(translated_parts)
+                        logger.info(f"MyMemory translated narration to '{alt_target}': '{spoken_text}'")
+                    except Exception as e2:
+                        logger.warning(f"Translation fallback to {target_lang} encountered: {e2}. Proceeding with original script.")
 
         communicate = edge_tts.Communicate(spoken_text, voice_id)
         submaker = edge_tts.SubMaker()

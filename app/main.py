@@ -822,6 +822,8 @@ def get_web_dashboard():
         });
 
         document.getElementById('player-card').classList.remove('hidden');
+        document.getElementById('scenes-breakdown-card').classList.remove('hidden');
+        document.getElementById('artifacts-box').classList.remove('hidden');
         switchAspect('16:9');
       }
 

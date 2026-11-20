@@ -55,7 +55,7 @@ async def process_job(job_id: str) -> None:
             tts_res = await tts_service.generate_narration(script_text, voice=voice, output_path=dest_audio)
             raw_audio_path = tts_res["audio_path"]
             job.audio_path = raw_audio_path
-            job.narration_text = script_text
+            job.narration_text = tts_res.get("spoken_text", script_text)
             word_timings = tts_res.get("word_timings", [])
         elif job.input_type == "scenes":
             scenes_input = job.request_params.get("scenes", [])
