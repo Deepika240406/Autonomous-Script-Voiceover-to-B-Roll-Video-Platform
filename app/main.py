@@ -117,11 +117,66 @@ def get_web_dashboard():
       background: #ffffff;
       border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .saas-card:hover {
       border-color: #cbd5e1;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Interactive Metric Cards (Image 1) */
+    .metric-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: #818cf8;
+      background-color: #ffffff;
+      box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.15), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    }
+    .metric-card:hover::after {
+      opacity: 1;
+    }
+
+    /* Architecture Feature Cards (Image 2) */
+    .feature-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: #a5b4fc;
+      background-color: #ffffff;
+      box-shadow: 0 16px 28px -4px rgba(79, 70, 229, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.04);
+    }
+    .feature-icon-wrapper {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .feature-card:hover .feature-icon-wrapper {
+      transform: scale(1.2) rotate(6deg);
+      background-color: #e0e7ff;
+    }
+
+    /* Subtle Float Animation */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-float {
+      animation: gentleFloat 4s ease-in-out infinite;
     }
     .input-field {
       background: #ffffff;
@@ -196,21 +251,21 @@ def get_web_dashboard():
         Transform voiceovers into broadcast-grade B-roll with contextual LLM scene decomposition, Sentence-BERT semantic ranking, and sub-second audio sync.
       </p>
 
-      <!-- Key Metrics Strip -->
+      <!-- Key Metrics Strip (With Dynamic Hover & Elevation Animations) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 max-w-3xl mx-auto text-left">
-        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
           <div class="text-lg font-bold text-indigo-600 font-mono mt-1">4.55 – 5.0 <span class="text-[11px] text-slate-400 font-normal">/ 5.0</span></div>
         </div>
-        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
           <div class="text-lg font-bold text-slate-800 font-mono mt-1">16:9 • 9:16 • 1:1</div>
         </div>
-        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Render Speed</div>
           <div class="text-lg font-bold text-emerald-600 font-mono mt-1">&lt; 30s <span class="text-[11px] text-slate-400 font-normal">Accelerated</span></div>
         </div>
-        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="metric-card bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
           <div class="text-lg font-bold text-slate-800 font-mono mt-1">100% Safe</div>
         </div>
@@ -452,8 +507,8 @@ def get_web_dashboard():
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 text-left">
         <!-- Card 1 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+        <div class="feature-card p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div class="feature-icon-wrapper w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
             🧠
           </div>
           <h3 class="text-sm font-bold text-slate-900">LLM Scene Decomposition</h3>
@@ -463,8 +518,8 @@ def get_web_dashboard():
         </div>
 
         <!-- Card 2 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+        <div class="feature-card p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div class="feature-icon-wrapper w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
             🎯
           </div>
           <h3 class="text-sm font-bold text-slate-900">Sentence-BERT Ranking</h3>
@@ -474,8 +529,8 @@ def get_web_dashboard():
         </div>
 
         <!-- Card 3 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+        <div class="feature-card p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div class="feature-icon-wrapper w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
             🤖
           </div>
           <h3 class="text-sm font-bold text-slate-900">VLM Frame Alignment</h3>
@@ -485,8 +540,8 @@ def get_web_dashboard():
         </div>
 
         <!-- Card 4 -->
-        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
+        <div class="feature-card p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div class="feature-icon-wrapper w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-lg">
             🛡️
           </div>
           <h3 class="text-sm font-bold text-slate-900">Avoidance & Safety Filter</h3>
