@@ -18,13 +18,14 @@ ASPECT_RATIO_CONFIGS = {
     "9:16": {
         "width": 1080,
         "height": 1920,
-        # Intelligent blurred background composite preserving edge subjects without cropping or distortion
-        "complex_filter": "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5[bg];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
+        # Ultra-fast high-quality scaling and cropping for vertical mobile format
+        "filter": "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
     },
     "1:1": {
         "width": 1080,
         "height": 1080,
-        "complex_filter": "[0:v]scale=1080:1080:force_original_aspect_ratio=increase,crop=1080:1080,boxblur=25:5[bg];[0:v]scale=1080:1080:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
+        # Ultra-fast high-quality scaling and cropping for square format
+        "filter": "scale=1080:1080:force_original_aspect_ratio=increase,crop=1080:1080,eq=contrast=1.03:brightness=0.01:saturation=1.05,format=yuv420p"
     }
 }
 
@@ -65,15 +66,15 @@ class VideoRenderingService:
 
         cmd.extend([
             "-c:v", "libx264",
-            "-preset", "veryfast",
-            "-threads", "1",
-            "-crf", "22",
+            "-preset", "ultrafast",
+            "-threads", "2",
+            "-crf", "23",
             "-r", "30",
             "-an",  # strip internal clip audio; narration audio is overlaid in final assembly
             output_clip_path
         ])
 
-        code, stdout, stderr = await asyncio.to_thread(run_command_sync, cmd, timeout=120)
+        code, stdout, stderr = await asyncio.to_thread(run_command_sync, cmd, timeout=300)
         if code != 0:
             logger.error(f"FFmpeg failed rendering scene clip: {stderr}")
             raise RenderingException(f"Failed to normalise scene {scene.scene_index} for {aspect_ratio}: {stderr}")
@@ -121,9 +122,9 @@ class VideoRenderingService:
 
         cmd.extend([
             "-c:v", "libx264",
-            "-preset", "veryfast",
-            "-threads", "1",
-            "-crf", "20",
+            "-preset", "ultrafast",
+            "-threads", "2",
+            "-crf", "22",
             "-c:a", "aac",
             "-b:a", "192k",
             "-ar", "44100",
@@ -132,7 +133,7 @@ class VideoRenderingService:
             output_video_path
         ])
 
-        code, stdout, stderr = await asyncio.to_thread(run_command_sync, cmd, timeout=180)
+        code, stdout, stderr = await asyncio.to_thread(run_command_sync, cmd, timeout=300)
 
         # Cleanup concat txt
         if os.path.exists(manifest_path):
