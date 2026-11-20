@@ -260,11 +260,26 @@ def get_web_dashboard():
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Render Aspect Ratios</label>
-              <div class="flex flex-col space-y-1.5 pt-1 text-xs font-medium">
-                <label class="flex items-center space-x-2 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-16-9" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>16:9 (Landscape)</span></label>
-                <label class="flex items-center space-x-2 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-9-16" class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>9:16 (Vertical)</span></label>
-                <label class="flex items-center space-x-2 cursor-pointer text-slate-700 hover:text-indigo-600 transition"><input type="checkbox" id="ratio-1-1" class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>1:1 (Square)</span></label>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Render Aspect Ratio</label>
+              <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+                <label id="lbl-ratio-16-9" class="flex flex-col items-center justify-center p-2 rounded-xl border border-indigo-600 bg-indigo-50/50 text-indigo-700 font-bold text-xs cursor-pointer transition select-none">
+                  <input type="checkbox" id="ratio-16-9" checked onchange="toggleRatioUI('16-9')" class="hidden">
+                  <span class="text-sm">🖥️</span>
+                  <span class="mt-0.5">16:9</span>
+                  <span class="text-[9px] font-normal text-indigo-500">Wide</span>
+                </label>
+                <label id="lbl-ratio-9-16" class="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
+                  <input type="checkbox" id="ratio-9-16" onchange="toggleRatioUI('9-16')" class="hidden">
+                  <span class="text-sm">📱</span>
+                  <span class="mt-0.5">9:16</span>
+                  <span class="text-[9px] font-normal text-slate-400">Reels</span>
+                </label>
+                <label id="lbl-ratio-1-1" class="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
+                  <input type="checkbox" id="ratio-1-1" onchange="toggleRatioUI('1-1')" class="hidden">
+                  <span class="text-sm">⏹️</span>
+                  <span class="mt-0.5">1:1</span>
+                  <span class="text-[9px] font-normal text-slate-400">Square</span>
+                </label>
               </div>
             </div>
           </div>
@@ -458,6 +473,16 @@ def get_web_dashboard():
     let cachedCaptions = null;
     let activeJobId = null;
     let currentAspect = '16:9';
+
+    function toggleRatioUI(ratioKey) {
+      const cb = document.getElementById(`ratio-${ratioKey}`);
+      const lbl = document.getElementById(`lbl-ratio-${ratioKey}`);
+      if (cb.checked) {
+        lbl.className = 'flex flex-col items-center justify-center p-2 rounded-xl border border-indigo-600 bg-indigo-50/60 text-indigo-700 font-bold text-xs cursor-pointer transition select-none shadow-xs';
+      } else {
+        lbl.className = 'flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none';
+      }
+    }
 
     function updateCharCount() {
       const text = document.getElementById('input-script').value;
