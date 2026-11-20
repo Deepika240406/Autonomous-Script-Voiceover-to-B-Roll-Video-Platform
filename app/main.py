@@ -183,43 +183,53 @@ def get_web_dashboard():
     </div>
   </header>
 
-  <!-- Clean SaaS Hero Banner -->
-  <section class="border-b border-slate-200/70 bg-white py-10 sm:py-12">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-3">
-      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
+  <!-- Screen 1: Full-Screen Hero Viewport (Image 2) -->
+  <section class="min-h-[calc(100vh-4rem)] border-b border-slate-200/80 bg-white flex flex-col justify-center items-center py-16 px-4 sm:px-6 relative">
+    <div class="max-w-4xl mx-auto text-center space-y-6 my-auto">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
         <span>✨ Powered by Sentence-BERT, Edge-TTS & Vision-Language Models</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
         Autonomous Script & Voiceover to <span class="text-indigo-600">B-Roll Video</span>
       </h1>
-      <p class="text-sm sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+      <p class="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
         Transform voiceovers into broadcast-grade B-roll with contextual LLM scene decomposition, Sentence-BERT semantic ranking, and sub-second audio sync.
       </p>
 
       <!-- Key Metrics Strip -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 max-w-3xl mx-auto text-left">
-        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 max-w-3xl mx-auto text-left">
+        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Semantic Precision</div>
-          <div class="text-base font-bold text-indigo-600 font-mono mt-0.5">4.55 – 5.0 <span class="text-[10px] text-slate-400 font-normal">/ 5.0</span></div>
+          <div class="text-lg font-bold text-indigo-600 font-mono mt-1">4.55 – 5.0 <span class="text-[11px] text-slate-400 font-normal">/ 5.0</span></div>
         </div>
-        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Aspect Formats</div>
-          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">16:9 • 9:16 • 1:1</div>
+          <div class="text-lg font-bold text-slate-800 font-mono mt-1">16:9 • 9:16 • 1:1</div>
         </div>
-        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Render Speed</div>
-          <div class="text-base font-bold text-emerald-600 font-mono mt-0.5">&lt; 30s <span class="text-[10px] text-slate-400 font-normal">Accelerated</span></div>
+          <div class="text-lg font-bold text-emerald-600 font-mono mt-1">&lt; 30s <span class="text-[11px] text-slate-400 font-normal">Accelerated</span></div>
         </div>
-        <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200">
+        <div class="bg-slate-50/90 p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Commercial License</div>
-          <div class="text-base font-bold text-slate-800 font-mono mt-0.5">100% Safe</div>
+          <div class="text-lg font-bold text-slate-800 font-mono mt-1">100% Safe</div>
         </div>
+      </div>
+
+      <!-- Scroll Down Guide Indicator -->
+      <div class="pt-8">
+        <a href="#studio-section" class="inline-flex flex-col items-center text-xs font-semibold text-slate-400 hover:text-indigo-600 transition-colors group">
+          <span>Scroll down to Video Creation Studio</span>
+          <svg class="w-5 h-5 mt-1 text-slate-400 group-hover:text-indigo-600 group-hover:translate-y-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Studio Workspace (Full Screen SaaS Dashboard) -->
-  <main id="studio-section" class="w-full px-4 sm:px-6 lg:px-10 py-8 flex-1">
+  <!-- Screen 2: Studio Workspace Section (Image 3) -->
+  <main id="studio-section" class="min-h-screen w-full px-4 sm:px-6 lg:px-10 py-12 flex-1 flex flex-col justify-center">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
       
       <!-- LEFT COLUMN: Creation Form Panel (5 cols) -->
