@@ -195,218 +195,226 @@ def get_web_dashboard():
     </div>
   </section>
 
-  <!-- Studio Workspace Main Container -->
-  <main id="studio-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Left Column: Video Creation Studio Form -->
-      <div class="lg:col-span-5 bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+  <!-- Studio Workspace Main Container (Full-Width Linear Step Flow) -->
+  <main id="studio-section" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full space-y-8">
+    
+    <!-- STEP 1: Video Creation Studio Card (Full Width) -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+        <div class="flex items-center space-x-3">
+          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">1</span>
           <div>
-            <h2 class="text-base font-bold text-slate-900">Video Creation Studio</h2>
-            <p class="text-xs text-slate-500">Configure script, voice persona, and aspect ratio</p>
+            <h2 class="text-lg font-bold text-slate-900">Configure Video Generation Job</h2>
+            <p class="text-xs text-slate-500">Provide script or voiceover, voice persona, aspect ratios, and avoidance safety rules</p>
           </div>
-          <span class="text-xs text-slate-500 font-mono bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200" id="char-count">0 chars</span>
+        </div>
+        <span class="self-start sm:self-auto text-xs text-slate-500 font-mono bg-slate-100 px-3 py-1 rounded-full border border-slate-200" id="char-count">0 chars</span>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Input Modality Selector -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Select Input Modality</label>
+          <div class="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs font-semibold max-w-md">
+            <button type="button" onclick="setMode('script')" id="btn-script" class="px-4 py-2.5 rounded-lg bg-white text-indigo-700 shadow-sm border border-slate-200/70 transition">✍️ Script Text</button>
+            <button type="button" onclick="setMode('scenes')" id="btn-scenes" class="px-4 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 transition">📋 Scene List</button>
+            <button type="button" onclick="setMode('audio')" id="btn-audio" class="px-4 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 transition">🎙️ Audio URL</button>
+          </div>
         </div>
 
-        <div class="space-y-5">
-          <!-- Input Modality Selector -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Input Format</label>
-            <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs font-semibold">
-              <button type="button" onclick="setMode('script')" id="btn-script" class="px-3 py-2 rounded-lg bg-white text-indigo-700 shadow-sm border border-slate-200/70 transition">✍️ Script Text</button>
-              <button type="button" onclick="setMode('scenes')" id="btn-scenes" class="px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">📋 Scene List</button>
-              <button type="button" onclick="setMode('audio')" id="btn-audio" class="px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">🎙️ Audio URL</button>
-            </div>
+        <!-- Script Text Input -->
+        <div id="section-script">
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Narration Script</label>
+            <span class="text-xs text-slate-400">Multi-sentence scripts auto-segment into synchronized B-roll scenes</span>
           </div>
+          <textarea id="input-script" rows="4" oninput="updateCharCount()" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition leading-relaxed font-sans" placeholder="Enter narration script... e.g. Travel allows us to explore new places and experience different cultures.">Travel allows us to explore new places and experience different cultures.</textarea>
+        </div>
 
-          <!-- Script Text Input -->
-          <div id="section-script">
-            <div class="flex justify-between items-center mb-1.5">
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Narration Script</label>
-              <span class="text-[11px] text-slate-400">Multi-sentence scripts auto-segment</span>
-            </div>
-            <textarea id="input-script" rows="4" oninput="updateCharCount()" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition leading-relaxed" placeholder="Enter narration script... e.g. Travel allows us to explore new places and experience different cultures.">Travel allows us to explore new places and experience different cultures.</textarea>
-          </div>
-
-          <!-- Structured Scenes JSON Input -->
-          <div id="section-scenes" class="hidden">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Structured Scene List (JSON)</label>
-            <textarea id="input-scenes" rows="4" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-3.5 font-mono text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition">[
+        <!-- Structured Scenes JSON Input -->
+        <div id="section-scenes" class="hidden">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Structured Scene List (JSON)</label>
+          <textarea id="input-scenes" rows="4" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-4 font-mono text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition">[
   {"text": "Travel allows us to explore new places and experience different cultures.", "visual_hint": "scenic world travel destination landmark"},
   {"text": "Ancient monuments and cultural festivals reveal our shared history.", "visual_hint": "traditional cultural festival monuments"}
 ]</textarea>
-          </div>
+        </div>
 
-          <!-- Audio Voiceover URL Input -->
-          <div id="section-audio" class="hidden">
-            <div class="flex items-center justify-between mb-1.5">
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Voiceover Audio URL</label>
-              <button type="button" onclick="loadDemoAudioUrl()" class="text-xs text-indigo-600 hover:text-indigo-800 transition font-semibold underline">Use Sample Demo Audio</button>
-            </div>
-            <input type="url" id="input-audio-url" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition font-mono" placeholder="https://example.com/voiceover.mp3" />
+        <!-- Audio Voiceover URL Input -->
+        <div id="section-audio" class="hidden">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Voiceover Audio URL</label>
+            <button type="button" onclick="loadDemoAudioUrl()" class="text-xs text-indigo-600 hover:text-indigo-800 transition font-semibold underline">Use Sample Demo Audio</button>
           </div>
+          <input type="url" id="input-audio-url" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl p-3.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/50 transition font-mono" placeholder="https://example.com/voiceover.mp3" />
+        </div>
 
-          <!-- Voice Persona & Aspect Ratios Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Voice Persona</label>
-              <select id="input-voice" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-medium focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100/50">
-                <option value="en-IN-female">🇮🇳 en-IN-female (Neerja)</option>
-                <option value="en-IN-male">🇮🇳 en-IN-male (Prabhat)</option>
-                <option value="ta-IN-female">🇮🇳 ta-IN-female (Pallavi - Tamil)</option>
-                <option value="hi-IN-female">🇮🇳 hi-IN-female (Swara - Hindi)</option>
-                <option value="en-US-male">🇺🇸 en-US-male (Guy)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Render Aspect Ratio</label>
-              <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-                <label id="lbl-ratio-16-9" class="flex flex-col items-center justify-center p-2 rounded-xl border border-indigo-600 bg-indigo-50/50 text-indigo-700 font-bold text-xs cursor-pointer transition select-none">
-                  <input type="checkbox" id="ratio-16-9" checked onchange="toggleRatioUI('16-9')" class="hidden">
-                  <span class="text-sm">🖥️</span>
-                  <span class="mt-0.5">16:9</span>
-                  <span class="text-[9px] font-normal text-indigo-500">Wide</span>
-                </label>
-                <label id="lbl-ratio-9-16" class="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
-                  <input type="checkbox" id="ratio-9-16" onchange="toggleRatioUI('9-16')" class="hidden">
-                  <span class="text-sm">📱</span>
-                  <span class="mt-0.5">9:16</span>
-                  <span class="text-[9px] font-normal text-slate-400">Reels</span>
-                </label>
-                <label id="lbl-ratio-1-1" class="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
-                  <input type="checkbox" id="ratio-1-1" onchange="toggleRatioUI('1-1')" class="hidden">
-                  <span class="text-sm">⏹️</span>
-                  <span class="mt-0.5">1:1</span>
-                  <span class="text-[9px] font-normal text-slate-400">Square</span>
-                </label>
-              </div>
+        <!-- Voice Persona & Aspect Ratios Grid (Clean 2-Column Inside Card) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Voice Persona & Language</label>
+            <select id="input-voice" class="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs text-slate-800 font-semibold focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100/50">
+              <option value="en-IN-female">🇮🇳 en-IN-female (Neerja)</option>
+              <option value="en-IN-male">🇮🇳 en-IN-male (Prabhat)</option>
+              <option value="ta-IN-female">🇮🇳 ta-IN-female (Pallavi - Tamil)</option>
+              <option value="hi-IN-female">🇮🇳 hi-IN-female (Swara - Hindi)</option>
+              <option value="en-US-male">🇺🇸 en-US-male (Guy)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Render Aspect Ratios</label>
+            <div class="grid grid-cols-3 gap-2.5">
+              <label id="lbl-ratio-16-9" class="flex items-center justify-center space-x-2 p-3 rounded-xl border border-indigo-600 bg-indigo-50/60 text-indigo-700 font-bold text-xs cursor-pointer transition select-none shadow-xs">
+                <input type="checkbox" id="ratio-16-9" checked onchange="toggleRatioUI('16-9')" class="hidden">
+                <span class="text-base">🖥️</span>
+                <span>16:9</span>
+              </label>
+              <label id="lbl-ratio-9-16" class="flex items-center justify-center space-x-2 p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
+                <input type="checkbox" id="ratio-9-16" onchange="toggleRatioUI('9-16')" class="hidden">
+                <span class="text-base">📱</span>
+                <span>9:16</span>
+              </label>
+              <label id="lbl-ratio-1-1" class="flex items-center justify-center space-x-2 p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium text-xs cursor-pointer hover:border-slate-300 transition select-none">
+                <input type="checkbox" id="ratio-1-1" onchange="toggleRatioUI('1-1')" class="hidden">
+                <span class="text-base">⏹️</span>
+                <span>1:1</span>
+              </label>
             </div>
           </div>
+        </div>
 
-          <!-- Content Avoidance Rules -->
+        <!-- Content Avoidance Rules & Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-slate-100">
           <div>
             <div class="flex justify-between items-center mb-1.5">
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Content Avoidance Rules</label>
-              <span class="text-[11px] text-slate-400">Strict filter</span>
+              <span class="text-[11px] text-slate-400">Strict safety filter</span>
             </div>
-            <input type="text" id="input-avoid" value="people's faces, alcohol" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-medium focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100/50" placeholder="Comma separated: people's faces, alcohol, violence" />
+            <input type="text" id="input-avoid" value="people's faces, alcohol" class="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs text-slate-800 font-medium focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100/50" placeholder="Comma separated: people's faces, alcohol, violence" />
           </div>
 
-          <!-- Subtitle Options -->
-          <div class="flex items-center space-x-6 pt-1 text-xs font-medium text-slate-700 border-t border-slate-100">
-            <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="burn-in" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Burn-in Subtitles</span></label>
-            <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="export-srt" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Generate captions.srt</span></label>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Subtitle & Export Options</label>
+            <div class="flex items-center space-x-6 pt-1 text-xs font-medium text-slate-700">
+              <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="burn-in" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Burn-in Subtitles</span></label>
+              <label class="flex items-center space-x-2 cursor-pointer hover:text-indigo-600 transition"><input type="checkbox" id="export-srt" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-0"> <span>Generate captions.srt</span></label>
+            </div>
           </div>
+        </div>
 
-          <!-- Submit Button -->
+        <!-- Submit Button -->
+        <div class="pt-2">
           <button id="btn-submit" onclick="submitJob()" class="w-full py-4 gradient-btn rounded-xl font-bold text-sm text-white shadow-lg shadow-indigo-500/25 active:scale-[0.99] flex items-center justify-center space-x-2 cursor-pointer">
             <span id="btn-submit-icon" class="text-base">✨</span>
             <span id="btn-submit-text">Generate Production B-Roll Video</span>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Right Column: Live Pipeline Monitor & Output Studio -->
-      <div class="lg:col-span-7 space-y-6">
-        
-        <!-- Live Pipeline Monitor Card -->
-        <div class="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-base font-bold text-slate-900">Pipeline Execution Monitor</h2>
-              <p class="text-xs text-slate-500 font-mono" id="job-id-display">Ready for generation job</p>
-            </div>
-            <div id="job-badge" class="px-3.5 py-1 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200">Idle</div>
-          </div>
-
-          <!-- 5-Stage Stepper -->
-          <div class="grid grid-cols-5 gap-1.5 pt-1">
-            <div id="step-1" class="p-2.5 rounded-xl border text-center transition step-pending">
-              <div class="text-[10px] font-mono uppercase font-bold">1. Ingest</div>
-            </div>
-            <div id="step-2" class="p-2.5 rounded-xl border text-center transition step-pending">
-              <div class="text-[10px] font-mono uppercase font-bold">2. Speech</div>
-            </div>
-            <div id="step-3" class="p-2.5 rounded-xl border text-center transition step-pending">
-              <div class="text-[10px] font-mono uppercase font-bold">3. LLM Scene</div>
-            </div>
-            <div id="step-4" class="p-2.5 rounded-xl border text-center transition step-pending">
-              <div class="text-[10px] font-mono uppercase font-bold">4. Match</div>
-            </div>
-            <div id="step-5" class="p-2.5 rounded-xl border text-center transition step-pending">
-              <div class="text-[10px] font-mono uppercase font-bold">5. Render</div>
-            </div>
-          </div>
-
-          <!-- Progress Bar -->
+    <!-- STEP 2: Live Pipeline Execution Monitor Card (Full Width) -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center space-x-3">
+          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">2</span>
           <div>
-            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
-              <div id="progress-bar" class="bg-gradient-to-r from-indigo-600 to-violet-600 h-full w-0 transition-all duration-300"></div>
-            </div>
-            <div class="flex justify-between text-xs text-slate-500 font-mono mt-2">
-              <span id="job-stage" class="truncate max-w-xs font-medium">Awaiting input submission</span>
-              <span id="job-progress" class="font-bold text-slate-900">0%</span>
-            </div>
+            <h2 class="text-lg font-bold text-slate-900">Pipeline Execution Monitor</h2>
+            <p class="text-xs text-slate-500 font-mono" id="job-id-display">Ready for generation job</p>
           </div>
         </div>
-
-        <!-- Video Player Studio Card -->
-        <div id="player-card" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm space-y-4">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div>
-              <h3 class="text-base font-bold text-slate-900">Rendered Video Preview</h3>
-              <p class="text-xs text-slate-500">Autonomous assembly with synchronized subtitles & audio</p>
-            </div>
-            <!-- Multi-Aspect Ratio Switcher -->
-            <div id="aspect-switcher" class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
-              <button onclick="switchAspect('16:9')" id="switch-16-9" class="px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm border border-slate-200/70 transition">16:9 Landscape</button>
-              <button onclick="switchAspect('9:16')" id="switch-9-16" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">9:16 Vertical</button>
-              <button onclick="switchAspect('1:1')" id="switch-1-1" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">1:1 Square</button>
-            </div>
-          </div>
-
-          <div id="player-container" class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 aspect-video relative flex items-center justify-center transition-all duration-300 mx-auto shadow-sm">
-            <video id="video-player" controls class="max-h-full max-w-full rounded-lg"></video>
-          </div>
-
-          <!-- Download Assets Shelf -->
-          <div id="results-links" class="pt-3 border-t border-slate-100">
-            <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">Production Output Assets</div>
-            <div id="links-container" class="grid grid-cols-2 md:grid-cols-3 gap-2.5 text-xs"></div>
-          </div>
-        </div>
-
-        <!-- Visual Scene Breakdown Cards (Interactive Timeline) -->
-        <div id="scenes-breakdown-card" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-base font-bold text-slate-900">Visual Scene Breakdown</h3>
-              <p class="text-xs text-slate-500">Sentence-BERT Context Ranking & Vision-Language Model Validation</p>
-            </div>
-            <span id="scene-count-badge" class="px-3 py-1 rounded-full text-xs font-mono bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">0 Scenes</span>
-          </div>
-          <div id="scene-cards-container" class="space-y-3.5 max-h-[32rem] overflow-y-auto pr-1"></div>
-        </div>
-
-        <!-- Timeline & Manifest Raw Inspector -->
-        <div id="artifacts-box" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm space-y-3">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-            <div class="flex space-x-4 text-xs">
-              <button onclick="showTab('timeline')" id="tab-timeline" class="pb-1.5 font-bold text-indigo-700 border-b-2 border-indigo-600 transition">timeline.json</button>
-              <button onclick="showTab('manifest')" id="tab-manifest" class="pb-1.5 font-semibold text-slate-500 hover:text-slate-800 transition">manifest.json</button>
-              <button onclick="showTab('captions')" id="tab-captions" class="pb-1.5 font-semibold text-slate-500 hover:text-slate-800 transition">captions.srt</button>
-            </div>
-            <button onclick="copyCurrentTab()" class="text-xs text-slate-600 hover:text-slate-900 transition font-mono flex items-center space-x-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50">
-              <span>📋 Copy Content</span>
-            </button>
-          </div>
-          <pre id="tab-content" class="bg-slate-900 p-4 rounded-xl font-mono text-xs text-slate-200 max-h-64 overflow-y-auto border border-slate-800 leading-relaxed"></pre>
-        </div>
-
+        <div id="job-badge" class="px-4 py-1.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">Idle</div>
       </div>
 
+      <!-- 5-Stage Stepper -->
+      <div class="grid grid-cols-5 gap-2 pt-1">
+        <div id="step-1" class="p-3 rounded-xl border text-center transition step-pending">
+          <div class="text-[10px] font-mono uppercase font-bold">1. Ingest</div>
+        </div>
+        <div id="step-2" class="p-3 rounded-xl border text-center transition step-pending">
+          <div class="text-[10px] font-mono uppercase font-bold">2. Speech</div>
+        </div>
+        <div id="step-3" class="p-3 rounded-xl border text-center transition step-pending">
+          <div class="text-[10px] font-mono uppercase font-bold">3. LLM Scene</div>
+        </div>
+        <div id="step-4" class="p-3 rounded-xl border text-center transition step-pending">
+          <div class="text-[10px] font-mono uppercase font-bold">4. Match</div>
+        </div>
+        <div id="step-5" class="p-3 rounded-xl border text-center transition step-pending">
+          <div class="text-[10px] font-mono uppercase font-bold">5. Render</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="pt-2">
+        <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-gradient-to-r from-indigo-600 to-violet-600 h-full w-0 transition-all duration-300"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 font-mono mt-2.5">
+          <span id="job-stage" class="truncate max-w-md font-medium">Awaiting input submission</span>
+          <span id="job-progress" class="font-bold text-slate-900">0%</span>
+        </div>
+      </div>
     </div>
+
+    <!-- STEP 3: Video Player Studio Card (Full Width) -->
+    <div id="player-card" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-3">
+        <div class="flex items-center space-x-3">
+          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">3</span>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Rendered Video Preview</h3>
+            <p class="text-xs text-slate-500">Autonomous assembly with synchronized subtitles & audio</p>
+          </div>
+        </div>
+        <!-- Multi-Aspect Ratio Switcher -->
+        <div id="aspect-switcher" class="flex items-center space-x-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs font-semibold">
+          <button onclick="switchAspect('16:9')" id="switch-16-9" class="px-3.5 py-2 rounded-lg bg-white text-indigo-700 shadow-sm border border-slate-200/70 transition font-bold">16:9 Landscape</button>
+          <button onclick="switchAspect('9:16')" id="switch-9-16" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">9:16 Vertical</button>
+          <button onclick="switchAspect('1:1')" id="switch-1-1" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">1:1 Square</button>
+        </div>
+      </div>
+
+      <div id="player-container" class="bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 aspect-video relative flex items-center justify-center transition-all duration-300 mx-auto shadow-md max-w-3xl">
+        <video id="video-player" controls class="max-h-full max-w-full rounded-xl"></video>
+      </div>
+
+      <!-- Download Assets Shelf -->
+      <div id="results-links" class="pt-4 border-t border-slate-100">
+        <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Production Output Assets</div>
+        <div id="links-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs"></div>
+      </div>
+    </div>
+
+    <!-- STEP 4: Visual Scene Breakdown Cards (Full Width) -->
+    <div id="scenes-breakdown-card" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center space-x-3">
+          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">4</span>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Visual Scene Breakdown</h3>
+            <p class="text-xs text-slate-500">Sentence-BERT Context Ranking & Vision-Language Model Validation</p>
+          </div>
+        </div>
+        <span id="scene-count-badge" class="px-3.5 py-1.5 rounded-full text-xs font-mono bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">0 Scenes</span>
+      </div>
+      <div id="scene-cards-container" class="space-y-4 max-h-[36rem] overflow-y-auto pr-1"></div>
+    </div>
+
+    <!-- STEP 5: Raw Timeline & Manifest Inspector (Full Width) -->
+    <div id="artifacts-box" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex space-x-6 text-xs">
+          <button onclick="showTab('timeline')" id="tab-timeline" class="pb-2 font-bold text-indigo-700 border-b-2 border-indigo-600 transition">timeline.json</button>
+          <button onclick="showTab('manifest')" id="tab-manifest" class="pb-2 font-semibold text-slate-500 hover:text-slate-800 transition">manifest.json</button>
+          <button onclick="showTab('captions')" id="tab-captions" class="pb-2 font-semibold text-slate-500 hover:text-slate-800 transition">captions.srt</button>
+        </div>
+        <button onclick="copyCurrentTab()" class="text-xs text-slate-600 hover:text-slate-900 transition font-mono flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <span>📋 Copy Content</span>
+        </button>
+      </div>
+      <pre id="tab-content" class="bg-slate-900 p-5 rounded-xl font-mono text-xs text-slate-200 max-h-72 overflow-y-auto border border-slate-800 leading-relaxed"></pre>
+    </div>
+
   </main>
 
   <!-- Engine Architecture & Capabilities (Website Feature Grid) -->
